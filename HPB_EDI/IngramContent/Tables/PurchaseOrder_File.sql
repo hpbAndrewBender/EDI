@@ -1,0 +1,27 @@
+﻿CREATE TABLE [IngramContent].[PurchaseOrder_File] (
+    [Id]                             INT          IDENTITY (1, 1) NOT NULL,
+    [CDF]                            BIT          NULL,
+    [Head_SequenceNumber]            SMALLINT     NULL,
+    [Head_FileSourceSAN]             VARCHAR (7)  NULL,
+    [Head_FileSourceName]            VARCHAR (13) NULL,
+    [Head_CreateDate]                DATE         NULL,
+    [Head_Filename]                  VARCHAR (22) NULL,
+    [Head_FormatVersion]             VARCHAR (3)  NULL,
+    [Head_IngramSAN]                 VARCHAR (7)  NULL,
+    [Head_VendorNameFlag]            CHAR (1)     NULL,
+    [Head_ProductDescription]        VARCHAR (4)  NULL,
+    [Foot_TotalLinesInFile]          SMALLINT     NULL,
+    [Foot_TotalPurchaseOrderRecords] SMALLINT     NULL,
+    [Foot_TotalUnitsOrdered]         SMALLINT     NULL,
+    [Foot_RecCount_00to09]           SMALLINT     NULL,
+    [Foot_RecCount_10to19]           SMALLINT     NULL,
+    [Foot_RecCount_20to29]           SMALLINT     NULL,
+    [Foot_RecCount_30to39]           SMALLINT     NULL,
+    [Foot_RecCount_40to49]           SMALLINT     NULL,
+    [Foot_RecCount_50to59]           SMALLINT     NULL,
+    [Foot_RecCount_60to69]           SMALLINT     NULL,
+    [Foot_RecCount_70to79]           SMALLINT     NULL,
+    [Foot_RecCount_80to99]           SMALLINT     NULL,
+    CONSTRAINT [PK_PurchaseOrder_File] PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+

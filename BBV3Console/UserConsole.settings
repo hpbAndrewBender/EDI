@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="UserConsole" GeneratedClassName="UserConsole">
+  <Profiles />
+  <Settings>
+    <Setting Name="ConStrgs_HPBEDI" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">dev|porcupine|HPB_EDI|trusted||;prd|silverbell|HPB_EDI|trusted||</Value>
+    </Setting>
+    <Setting Name="Env" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">dev</Value>
+    </Setting>
+    <Setting Name="ConStrgs_Delims" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">;|</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

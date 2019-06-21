@@ -1,0 +1,25 @@
+﻿CREATE TABLE [IngramContent].[PurchaseAck_Details] (
+    [Id]                                 INT            IDENTITY (1, 1) NOT NULL,
+    [PurchaseId]                         INT            NULL,
+    [LineItem_LineItemPONumber]          VARCHAR (10)   NULL,
+    [LineItem_ItemNumber]                VARCHAR (20)   NULL,
+    [LineItem_POAStatusCode]             SMALLINT       NULL,
+    [LineItem_DCCode]                    SMALLINT       NULL,
+    [AddDetail_AvailabilityDate]         DATE           NULL,
+    [AddDetail_DCInventory]              VARCHAR (40)   NULL,
+    [AddLineItem_Title]                  VARCHAR (30)   NULL,
+    [AddLineItem_Author]                 VARCHAR (30)   NULL,
+    [AddLineItem_BindingCode]            SMALLINT       NULL,
+    [AddLineItem_Publisher]              VARCHAR (20)   NULL,
+    [AddLineItem_ReleaseDate]            DATE           NULL,
+    [AddLineItem_OriginalSequenceNumber] SMALLINT       NULL,
+    [TotalQtyPredictedToShip]            SMALLINT       NULL,
+    [PriceRecord_NetPrice]               DECIMAL (7, 2) NULL,
+    [PriceRecord_DiscountedList]         DECIMAL (7, 2) NULL,
+    [PriceRecord_TotalLineOrderQty]      SMALLINT       NULL,
+    CONSTRAINT [PK_PurchaseAck_Details] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_MetaData.Codes~IngramContent.PurchaseAck_Purchase-DCCode] FOREIGN KEY ([LineItem_DCCode]) REFERENCES [MetaData].[Codes] ([Id]),
+    CONSTRAINT [FK_MetaData.Codes~IngramContent.PurchaseAck_Purchase-POAStatusCode] FOREIGN KEY ([LineItem_POAStatusCode]) REFERENCES [MetaData].[Codes] ([Id]),
+    CONSTRAINT [FK_PurchaseAck_Purchase~PurchaseAck_Details] FOREIGN KEY ([PurchaseId]) REFERENCES [IngramContent].[PurchaseAck_Purchase] ([Id])
+);
+

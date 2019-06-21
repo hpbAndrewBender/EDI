@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Configurations>Debug;Release;Debug NoSQL</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\..\..\Users\andrew_bender\.nuget\packages\nlog.config\4.6.4\contentFiles\any\any\NLog.config" Link="NLog.config">
+      <Private>True</Private>
+      <NuGetPackageVersion>4.6.4</NuGetPackageVersion>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <NuGetItemType>None</NuGetItemType>
+      <TargetPath>NLog.config</TargetPath>
+      <NuGetPackageId>NLog.Config</NuGetPackageId>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NLog" Version="4.6.4" />
+    <PackageReference Include="NLog.Config" Version="4.6.4" />
+    <PackageReference Include="NLog.InstallNLogConfig" Version="2.0.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BBV3\FormatBBV3.csproj" />
+    <ProjectReference Include="..\CDFL\FormatCDFL.csproj" />
+    <ProjectReference Include="..\HPBEDI\DataHPBEDI.csproj" />
+    <ProjectReference Include="..\IngramContent\VendorIngramContent.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System">
+      <HintPath>System</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="UserConsole.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UserConsole.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="UserConsole.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>UserConsole.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,3 @@
+﻿CREATE LOGIN [HPB\dist users]
+    FROM WINDOWS WITH DEFAULT_DATABASE = [HPB_Logistics], DEFAULT_LANGUAGE = [us_english];
+

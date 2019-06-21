@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Configurations>Debug;Release;Debug NoSQL</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Logic\**" />
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Logic\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Logic\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NLog" Version="4.6.4" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IO\CommonLib.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+﻿CREATE TABLE [IngramContent].[ShipNotice_Detail] (
+    [Id]                   INT            IDENTITY (1, 1) NOT NULL,
+    [OrderID]              INT            NULL,
+    [ClientOrderID]        VARCHAR (22)   NULL,
+    [ShippingWarehouse]    SMALLINT       NULL,
+    [IngramOrderEntry]     VARCHAR (10)   NULL,
+    [ISBN10Ordered]        VARCHAR (10)   NULL,
+    [ISBN10Shipped]        VARCHAR (10)   NULL,
+    [QuantityPredicted]    SMALLINT       NULL,
+    [QuantitySlashed]      SMALLINT       NULL,
+    [QuantityShipped]      SMALLINT       NULL,
+    [ItemDetailStatusCode] SMALLINT       NULL,
+    [TrackingNumber]       VARCHAR (25)   NULL,
+    [SCAC]                 VARCHAR (5)    NULL,
+    [IngramItemListPrice]  NUMERIC (7, 2) NULL,
+    [NetDiscountedPrice]   NUMERIC (7, 2) NULL,
+    [LineItemIDNumber]     VARCHAR (10)   NULL,
+    [SSL]                  VARCHAR (20)   NULL,
+    [Weight]               NUMERIC (9, 2) NULL,
+    [SMCorSCRC]            VARCHAR (2)    NULL,
+    [ISBN13OrEAN]          VARCHAR (15)   NULL,
+    CONSTRAINT [PK_ShipNotice_Detail] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_MetaData.Codes~IngramContent.ShipNotice-ItemDetailStatusCode] FOREIGN KEY ([ItemDetailStatusCode]) REFERENCES [MetaData].[Codes] ([Id]),
+    CONSTRAINT [FK_MetaData.Codes~IngramContent.ShipNotice-ShippingWarehouse] FOREIGN KEY ([ShippingWarehouse]) REFERENCES [MetaData].[Codes] ([Id]),
+    CONSTRAINT [FK_ShipNotice_Order~ShipNotice_Detail] FOREIGN KEY ([OrderID]) REFERENCES [IngramContent].[ShipNotice_Order] ([Id])
+);
+

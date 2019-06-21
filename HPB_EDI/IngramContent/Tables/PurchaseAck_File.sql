@@ -1,0 +1,28 @@
+﻿CREATE TABLE [IngramContent].[PurchaseAck_File] (
+    [Id]                          INT          IDENTITY (1, 1) NOT NULL,
+    [CDF]                         BIT          NULL,
+    [Head_SequenceNumber]         SMALLINT     NULL,
+    [Head_FileSourceSAN]          VARCHAR (7)  NULL,
+    [Head_FileSourceName]         VARCHAR (13) NULL,
+    [Head_POACreateDate]          DATE         NULL,
+    [Head_ElectronicControlUnit]  VARCHAR (5)  NULL,
+    [Head_Filename]               VARCHAR (22) NULL,
+    [Head_FormatVersion]          VARCHAR (3)  NULL,
+    [Head_DestinationSAN]         VARCHAR (7)  NULL,
+    [Head_POAType]                SMALLINT     NULL,
+    [Foot_TotalLinesInFile]       SMALLINT     NULL,
+    [Foot_TotalPOSAcknowledged]   SMALLINT     NULL,
+    [foot_TotalUnitsAcknowledged] SMALLINT     NULL,
+    [Foot_RecCount_00to09]        SMALLINT     NULL,
+    [Foot_RecCount_10to19]        SMALLINT     NULL,
+    [Foot_RecCount_20to29]        SMALLINT     NULL,
+    [Foot_RecCount_30to39]        SMALLINT     NULL,
+    [Foot_RecCount_40to49]        SMALLINT     NULL,
+    [Foot_RecCount_50to59]        SMALLINT     NULL,
+    [Foot_RecCount_60to69]        SMALLINT     NULL,
+    [Foot_RecCount_70to79]        SMALLINT     NULL,
+    [Foot_RecCount_80to99]        SMALLINT     NULL,
+    CONSTRAINT [PK_PurchaseAck_File] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_MetaData.Codes~IngramContent.PurchaseAck_Details-POAType] FOREIGN KEY ([Head_POAType]) REFERENCES [MetaData].[Codes] ([Id])
+);
+

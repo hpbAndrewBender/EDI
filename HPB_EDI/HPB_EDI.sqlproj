@@ -1,0 +1,382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>HPB_EDI</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{61cc3dae-d7eb-4636-bef7-cee8a1f51ad2}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>HPB_EDI</RootNamespace>
+    <AssemblyName>HPB_EDI</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug NoSQL|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="ImportBBV3\" />
+    <Folder Include="ImportBBV3\Tables\" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="importX12\" />
+    <Folder Include="importX12\Tables\" />
+    <Folder Include="archiv\" />
+    <Folder Include="archiv\Tables\" />
+    <Folder Include="importCDFL\" />
+    <Folder Include="importCDFL\Tables\" />
+    <Folder Include="IngramContent\" />
+    <Folder Include="IngramContent\Tables\" />
+    <Folder Include="EDI\" />
+    <Folder Include="EDI\Tables\" />
+    <Folder Include="MetaData\" />
+    <Folder Include="MetaData\Tables\" />
+    <Folder Include="dbo\Views\" />
+    <Folder Include="Security\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="EDI\Stored Procedures\" />
+    <Folder Include="EDI\User Defined Types\" />
+    <Folder Include="Logging\" />
+    <Folder Include="Logging\Tables\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="ImportBBV3\Tables\ShipNotice_CR_ASNCompany.sql" />
+    <Build Include="dbo\Tables\EDI_Transactions.sql" />
+    <Build Include="importX12\Tables\TagN1.sql" />
+    <Build Include="ImportBBV3\Tables\ShipNotice_OP_ASNPack.sql" />
+    <Build Include="archiv\Tables\850_PO_Dtl.sql" />
+    <Build Include="importX12\Tables\TagN2.sql" />
+    <Build Include="ImportBBV3\Tables\ShipNotice_OR_ASNShipment.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R10_ClientHeader.sql" />
+    <Build Include="dbo\Tables\WEB_Invoice_Audit_log.sql" />
+    <Build Include="ImportBBV3\Tables\ShipNotice_OD_ASNShipmentDetail.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R20_FixedSpecialHandlingInstructions.sql" />
+    <Build Include="dbo\Tables\temp_810_Inv_Hdr.sql" />
+    <Build Include="importX12\Tables\TagN3.sql" />
+    <Build Include="ImportBBV3\Tables\Invoice_R01_InvoiceFileHeader.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R21_PurchaseOrderOptions.sql" />
+    <Build Include="archiv\Tables\855_Ack_Dtl.sql" />
+    <Build Include="importX12\Tables\TagN4.sql" />
+    <Build Include="ImportBBV3\Tables\Invoice_R15_InvoiceHeader.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R24_CustomerCost.sql" />
+    <Build Include="dbo\Tables\temp_810_Inv_Dtl.sql" />
+    <Build Include="ImportBBV3\Tables\Invoice_R16_InvoiceVendorDetail.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R25_CustomerBillToName.sql" />
+    <Build Include="importX12\Tables\TagPAL.sql" />
+    <Build Include="ImportBBV3\Tables\Invoice_R45_InvoiceDetail.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R26_CustomerBillToPhoneNumber.sql" />
+    <Build Include="importX12\Tables\TagPER.sql" />
+    <Build Include="ImportBBV3\Tables\Invoice_R46_DetailISBN13EAN.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R27_CustomerBillToAddressLine.sql" />
+    <Build Include="ImportBBV3\Tables\Invoice_R48_DetailTotal.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R29_CustomerBillToCityStateZip.sql" />
+    <Build Include="importX12\Tables\TagPID.sql" />
+    <Build Include="archiv\Tables\856_ASN_Dtl.sql" />
+    <Build Include="ImportBBV3\Tables\Invoice_R55_InvoiceTotals.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R30_RecipientShipToName.sql" />
+    <Build Include="dbo\Tables\ISBNComp.sql" />
+    <Build Include="importX12\Tables\TagPO1.sql" />
+    <Build Include="ImportBBV3\Tables\Invoice_R57_InvoiceTrailer.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R31_RecipientShipToPhone.sql" />
+    <Build Include="IngramContent\Tables\PurchaseAck_Purchase.sql" />
+    <Build Include="ImportBBV3\Tables\Invoice_R95_InvoiceFileTrailer.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R32_ShippingRecordRecipientAddressLine.sql" />
+    <Build Include="importX12\Tables\TagPRF.sql" />
+    <Build Include="archiv\Tables\810_Inv_Dtl.sql" />
+    <Build Include="ImportBBV3\Tables\BatchItem.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R34_RecipientShippingRecordCityStateZip.sql" />
+    <Build Include="IngramContent\Tables\PurchaseAck_Details.sql" />
+    <Build Include="dbo\Tables\MissingINV.sql" />
+    <Build Include="importX12\Tables\TagREF.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R35_DropShipDetail.sql" />
+    <Build Include="importX12\Tables\EDIFilesDownload.sql" />
+    <Build Include="ImportBBV3\Tables\Batch.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R36_SpecialDeliveryInstructions.sql" />
+    <Build Include="importX12\Tables\TagSAC.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R37_MArketingMessage.sql" />
+    <Build Include="dbo\Tables\temp_856_ASN_Dtl.sql" />
+    <Build Include="importX12\Tables\TagSCH.sql" />
+    <Build Include="EDI\Tables\InvoiceHeader.sql" />
+    <Build Include="IngramContent\Tables\ShipNotice_Order.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R38_GiftMessage.sql" />
+    <Build Include="dbo\Tables\temp_856_ASN_Hdr.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R40_LineItem.sql" />
+    <Build Include="importX12\Tables\TagSE.sql" />
+    <Build Include="dbo\Tables\Vendor_SAN_Codes.sql" />
+    <Build Include="EDI\Tables\InvoiceDetail.sql" />
+    <Build Include="IngramContent\Tables\ShipNotice_Detail.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R41_AdditionalLineItem.sql" />
+    <Build Include="dbo\Tables\HPB_SAN_Codes.sql" />
+    <Build Include="importX12\Tables\TagSLN.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R42_LineItemGiftMessage.sql" />
+    <Build Include="EDI\Tables\PurchaseOrderHeader.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R45_Imprint.sql" />
+    <Build Include="dbo\Tables\temp_850_PO_Dtl.sql" />
+    <Build Include="importX12\Tables\TagSN1.sql" />
+    <Build Include="dbo\Tables\temp_850_PO_Hdr.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R50_PurchaseOrderControl.sql" />
+    <Build Include="dbo\Tables\850_Ack_ManualAdd.sql" />
+    <Build Include="EDI\Tables\PurchaseOrderDetail.sql" />
+    <Build Include="IngramContent\Tables\Invoice_Header.sql" />
+    <Build Include="importX12\Tables\TagST.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R90_FileTrailer.sql" />
+    <Build Include="EDI\Tables\AcknowledgeHeader.sql" />
+    <Build Include="importX12\Tables\TagTD1.sql" />
+    <Build Include="IngramContent\Tables\Invoice_Detail.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R11_PurchaseOrderHeader.sql" />
+    <Build Include="importX12\Tables\TagTD5.sql" />
+    <Build Include="EDI\Tables\AcknowledgeDetail.sql" />
+    <Build Include="IngramContent\Tables\Invoice_File.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R21_FreeFormVendor.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R30_RecipientShipToNameAndAddress.sql" />
+    <Build Include="importX12\Tables\TagTDS.sql" />
+    <Build Include="EDI\Tables\ShipmentHeader.sql" />
+    <Build Include="IngramContent\Tables\PurchaseAck_File.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R32_RecipientShipToAdditionalShippingInformation.sql" />
+    <Build Include="importX12\Tables\TagTXI.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R34_RecipientShipToCityStateAndZip.sql" />
+    <Build Include="MetaData\Tables\IdentificationQualifer.sql" />
+    <Build Include="EDI\Tables\ShipmentDetail.sql" />
+    <Build Include="IngramContent\Tables\PurchaseOrder_File.sql" />
+    <Build Include="importX12\Tables\EDITypes.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R40_LineItem.sql" />
+    <Build Include="archiv\Tables\856_ASN_Hdr.sql" />
+    <Build Include="IngramContent\Tables\ShipNotice_Company.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R41_AdditionalDetail.sql" />
+    <Build Include="dbo\Tables\SummaryEDI_855.sql" />
+    <Build Include="importX12\Tables\EDITransactionCodes.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R42_AdditionalLineItem.sql" />
+    <Build Include="importCDFL\Tables\BatchItem.sql" />
+    <Build Include="archiv\Tables\855_Ack_Hdr.sql" />
+    <Build Include="importX12\Tables\EDIQualifierTypes.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R43_AdditionalLineItem.sql" />
+    <Build Include="importX12\Tables\EDIFiles.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R44_ItemNumberOrPrice.sql" />
+    <Build Include="importX12\Tables\EDIQualifiers.sql" />
+    <Build Include="importX12\Tables\TagACK.sql" />
+    <Build Include="archiv\Tables\810_Inv_Hdr.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R59_PurchaseOrderControlTotals.sql" />
+    <Build Include="importX12\Tables\TagBAK.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R91_FileTrailer.sql" />
+    <Build Include="importX12\Tables\EDIQualifierShippingStatusTypes.sql" />
+    <Build Include="importCDFL\Tables\Batch.sql" />
+    <Build Include="importX12\Tables\EDISummary.sql" />
+    <Build Include="archiv\Tables\850_PO_Hdr.sql" />
+    <Build Include="importX12\Tables\TagBEG.sql" />
+    <Build Include="importCDFL\Tables\ShipNotice_OR_OrderRecord.sql" />
+    <Build Include="importX12\Tables\EDIQualifierShippingStatuses.sql" />
+    <Build Include="importCDFL\Tables\Invoice_R01_InvoiceFileHeader.sql" />
+    <Build Include="importX12\Tables\TagBIG.sql" />
+    <Build Include="importCDFL\Tables\ShipNotice_OD_OrderDetailRecord.sql" />
+    <Build Include="importCDFL\Tables\PurchaseAcknowledgement_R02_FileHeader.sql" />
+    <Build Include="dbo\Tables\SummaryEDI_Segments.sql" />
+    <Build Include="importX12\Tables\TagBSN.sql" />
+    <Build Include="importCDFL\Tables\PurchaseOrder_R00_FileHeader.sql" />
+    <Build Include="importCDFL\Tables\Invoice_R15_InvoiceHeader.sql" />
+    <Build Include="importCDFL\Tables\ShipNotice_CR_CompanyRecord.sql" />
+    <Build Include="dbo\Tables\Vendor_Status_Codes.sql" />
+    <Build Include="importX12\Tables\TagCSH.sql" />
+    <Build Include="importCDFL\Tables\Invoice_R45_InvoiceDetail.sql" />
+    <Build Include="MetaData\Tables\FileFormat.sql" />
+    <Build Include="importCDFL\Tables\Invoice_R46_InvoiceDetail.sql" />
+    <Build Include="importX12\Tables\TagCTP.sql" />
+    <Build Include="dbo\Tables\810_Inv_Charges.sql" />
+    <Build Include="importCDFL\Tables\Invoice_R48_DetailTotal.sql" />
+    <Build Include="MetaData\Tables\CodeTypes.sql" />
+    <Build Include="importX12\Tables\TagCTT.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R00_ClientFileHeader.sql" />
+    <Build Include="importCDFL\Tables\Invoice_R49_DetailTotalOrFreightAndFees.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R10_ClientHeader.sql" />
+    <Build Include="importCDFL\Tables\Invoice_R55_InvoiceTotals.sql" />
+    <Build Include="importX12\Tables\TagCUR.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R20_FixedSpecialHandlingInstructions.sql" />
+    <Build Include="importCDFL\Tables\Invoice_R57_InvoiceTrailer.sql" />
+    <Build Include="importX12\Tables\TagDTM.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R21_PurchaseOrderOptions.sql" />
+    <Build Include="importCDFL\Tables\Invoice_R95_InvoiceFileTrailer.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R40_LineItemDetail.sql" />
+    <Build Include="importX12\Tables\TagFOB.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R41_AdditionalLineItemDetail.sql" />
+    <Build Include="importX12\Tables\TagGE.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R45_Imprint.sql" />
+    <Build Include="importX12\Tables\TagAK1.sql" />
+    <Build Include="importX12\Tables\TagGS.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R46_StickerTextLines.sql" />
+    <Build Include="importX12\Tables\TagAK2.sql" />
+    <Build Include="importX12\Tables\TagHL.sql" />
+    <Build Include="dbo\Tables\EDI_Process_Log.sql" />
+    <Build Include="importX12\Tables\TagAK3.sql" />
+    <Build Include="importX12\Tables\TagIEA.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R02_FileHeader.sql" />
+    <Build Include="importX12\Tables\TagAK4.sql" />
+    <Build Include="importX12\Tables\TagISA.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R11_PurchaseOrderHeader.sql" />
+    <Build Include="importX12\Tables\TagAK5.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R21_FreeFormVendor.sql" />
+    <Build Include="IngramContent\Tables\PurchaseOrder_Client.sql" />
+    <Build Include="dbo\Tables\Email_Audit_Log.sql" />
+    <Build Include="importX12\Tables\TagIT1.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R40_LineItem.sql" />
+    <Build Include="importX12\Tables\TagAK9.sql" />
+    <Build Include="importX12\Tables\TagIT8.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R41_AdditionalDetail.sql" />
+    <Build Include="MetaData\Tables\Codes.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R42_AdditionalLineItem.sql" />
+    <Build Include="IngramContent\Tables\PurchaseOrder_Details.sql" />
+    <Build Include="dbo\Tables\temp_855_Ack_Dtl.sql" />
+    <Build Include="importX12\Tables\TagITD.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R43_AdditionalLineItem.sql" />
+    <Build Include="dbo\Tables\temp_855_Ack_Hdr.sql" />
+    <Build Include="importX12\Tables\TagLIN.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R44_ItemNumberOrPrice.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R45_AdditionalLineItem.sql" />
+    <Build Include="importX12\Tables\TagMAN.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R59_PurchaseOrderControlTotals.sql" />
+    <Build Include="importX12\Tables\TagMEA.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseAcknowledgement_R91_FileTrailer.sql" />
+    <Build Include="dbo\Views\vuFileSummary.sql" />
+    <Build Include="dbo\Views\856_ASN_HDR.sql" />
+    <Build Include="dbo\Views\856_ASN_DTL.sql" />
+    <Build Include="dbo\Views\850_PO_HDR.sql" />
+    <Build Include="dbo\Views\850_PO_DTL.sql" />
+    <Build Include="dbo\Views\810_INV_HDR.sql" />
+    <Build Include="dbo\Views\810_INV_DTL.sql" />
+    <Build Include="dbo\Views\855_ACK_HDR.sql" />
+    <Build Include="dbo\Views\855_ACK_DTL.sql" />
+    <Build Include="dbo\Views\vuImportEDI_Unprocessed_TransactionRanges.sql" />
+    <Build Include="Security\HPB_dgreen.sql" />
+    <Build Include="Security\HPB_dgreen_1.sql" />
+    <Build Include="Security\HPB_dist users.sql" />
+    <Build Include="Security\HPB_dist users_1.sql" />
+    <Build Include="Security\reportreader.sql" />
+    <Build Include="Security\btprocess.sql" />
+    <Build Include="Security\btprocess_1.sql" />
+    <Build Include="Security\HPB_Tracy_Dennis.sql" />
+    <Build Include="Security\HPB_Tracy_Dennis_1.sql" />
+    <Build Include="Security\RoleMemberships.sql" />
+    <Build Include="dbo\Functions\EDIfn_GetResponseACKDtls.sql" />
+    <Build Include="dbo\Functions\EDIfn_GetShipNoticeACKDtls.sql" />
+    <Build Include="dbo\Functions\EDIfn_GetPODetails.sql" />
+    <Build Include="dbo\Functions\EDIfn_GetInvoiceACKDtls.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessPUBNET_InvAck.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessSFTP_ResponseAck.sql" />
+    <Build Include="dbo\Stored Procedures\uspImportEDIHeadersAndDetails850.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessSFTP_ShipNoticeAck.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateProcessedAckACK.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateProcessedASNACK.sql" />
+    <Build Include="dbo\Stored Procedures\PreOrder_BT_Processing.sql" />
+    <Build Include="dbo\Stored Procedures\PreOrder_PO_Consolidate.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessPUBNET_ResponseAck.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessPUBNET_ShipNoticeAck.sql" />
+    <Build Include="dbo\Stored Procedures\CDF_BT_CheckMissingResponses.sql" />
+    <Build Include="dbo\Stored Procedures\uspImportEDIHeadersAndDetails856.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessPOFiles.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessReceivedFiles.sql" />
+    <Build Include="dbo\Stored Procedures\ImportEDIHeadersAndDetails856a.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateProcessedPO.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessSFTP_POFiles_2019.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessSFTP_ResponseAck_2019.sql" />
+    <Build Include="dbo\Stored Procedures\uspImportSaveFileName.sql" />
+    <Build Include="dbo\Stored Procedures\uspImportEDISummary.sql" />
+    <Build Include="dbo\Stored Procedures\uspImportEDI_855_HeaderDetail.sql" />
+    <Build Include="dbo\Stored Procedures\RPT_Get_Locations.sql" />
+    <Build Include="dbo\Stored Procedures\RPT_Get_Loc_Invoices.sql" />
+    <Build Include="dbo\Stored Procedures\RPT_Get_InvoiceSummary.sql" />
+    <Build Include="dbo\Stored Procedures\RPT_Get_InvoiceItemDtls.sql" />
+    <Build Include="dbo\Stored Procedures\RPT_Get_InvoiceDtls.sql" />
+    <Build Include="dbo\Stored Procedures\RPT_Get_Vendors.sql" />
+    <Build Include="dbo\Stored Procedures\uspImportEDI_856_HeaderDetail.sql" />
+    <Build Include="dbo\Stored Procedures\uspImportEDI_810_HeaderDetail.sql" />
+    <Build Include="dbo\Stored Procedures\CDF_BT_Processing.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessSFTP_POFiles.sql" />
+    <Build Include="dbo\Stored Procedures\GetSFTPFolders.sql" />
+    <Build Include="dbo\Stored Procedures\uspImportEDI_997_HeaderDetail.sql" />
+    <Build Include="dbo\Stored Procedures\ProcessSFTP_InvAck.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateProcessedInvACK.sql" />
+    <Build Include="dbo\Stored Procedures\uspImportEDIHeadersAndDetails855.sql" />
+    <Build Include="dbo\Stored Procedures\uspImportEDIHeadersAndDetails810.sql" />
+    <Build Include="Security\archiv.sql" />
+    <Build Include="Security\EDI.sql" />
+    <Build Include="Security\ImportBBV3.sql" />
+    <Build Include="Security\importCDFL.sql" />
+    <Build Include="Security\importX12.sql" />
+    <Build Include="Security\IngramContent.sql" />
+    <Build Include="Security\IngramEntertainment.sql" />
+    <Build Include="Security\MetaData.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R90_FileTrailer.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R50_PurchaseOrderTrailer.sql" />
+    <Build Include="ImportBBV3\Tables\PurchaseOrder_R46_StickerBarcode.sql" />
+    <Build Include="EDI\Stored Procedures\uspShipment_Insert.sql" />
+    <Build Include="EDI\Stored Procedures\uspPurchaseOrder_Retrieve.sql" />
+    <Build Include="EDI\Stored Procedures\uspInvoice_Insert.sql" />
+    <Build Include="EDI\Stored Procedures\uspAcknowledge_Insert.sql" />
+    <Build Include="EDI\User Defined Types\TypeShipmentHeader.sql" />
+    <Build Include="EDI\User Defined Types\TypeShipmentDetail.sql" />
+    <Build Include="EDI\User Defined Types\TypePurchaseOrderHeader.sql" />
+    <Build Include="EDI\User Defined Types\TypePurchaseOrderDetail.sql" />
+    <Build Include="EDI\User Defined Types\TypeInvoiceHeader.sql" />
+    <Build Include="EDI\User Defined Types\TypeInvoiceDetail.sql" />
+    <Build Include="EDI\User Defined Types\TypeAcknowledgeHeader.sql" />
+    <Build Include="EDI\User Defined Types\TypeAcknowledgeDetail.sql" />
+    <Build Include="EDI\Tables\SourceType.sql" />
+    <Build Include="Logging\Tables\SQLMessages.sql" />
+    <Build Include="EDI\Stored Procedures\uspCreateBatch.sql" />
+    <Build Include="Security\Logging.sql" />
+  </ItemGroup>
+</Project>

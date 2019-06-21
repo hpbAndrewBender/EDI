@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Configurations>Debug;Release;Debug NoSQL</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Extensions\**" />
+    <Compile Remove="Logic\Converters\**" />
+    <Compile Remove="Logic\Retrieve\**" />
+    <EmbeddedResource Remove="Extensions\**" />
+    <EmbeddedResource Remove="Logic\Converters\**" />
+    <EmbeddedResource Remove="Logic\Retrieve\**" />
+    <None Remove="Extensions\**" />
+    <None Remove="Logic\Converters\**" />
+    <None Remove="Logic\Retrieve\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FileHelpers" Version="3.4.0" />
+    <PackageReference Include="NLog" Version="4.6.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IO\CommonLib.csproj" />
+  </ItemGroup>
+
+</Project>

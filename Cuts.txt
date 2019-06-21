@@ -1,0 +1,162 @@
+	/*
+			//
+			List<BBV3.Models.Files.PurchaseOrder.DataSequence.V3> orderBBV3 = new List<BBV3.Models.Files.PurchaseOrder.DataSequence.V3>();
+			List<BBV3.Models.Files.PurchaseAcknowledgement.DataSequence.V3> ackBBV3 = new List<BBV3.Models.Files.PurchaseAcknowledgement.DataSequence.V3>();
+			List<BBV3.Models.Files.ShipNotice.DataSequence.V3> asnBBV3 = new List<BBV3.Models.Files.ShipNotice.DataSequence.V3>();
+			List<BBV3.Models.Files.Invoice.DataSequence.V3> invBBV3 = new List<BBV3.Models.Files.Invoice.DataSequence.V3>();
+			//
+			List<CDFL.Models.Files.PurchaseOrder.DataSequence.V3> orderCDFL = new List<CDFL.Models.Files.PurchaseOrder.DataSequence.V3>();
+			List<CDFL.Models.Files.PurchaseAcknowledgement.DataSequence.V3> ackCDFL = new List<CDFL.Models.Files.PurchaseAcknowledgement.DataSequence.V3>();
+			List<List<CDFL.Models.Files.ShipNotice.DataSequence.V3>> asnCDFL = new List<List<CDFL.Models.Files.ShipNotice.DataSequence.V3>>();
+			List<CDFL.Models.Files.Invoice.DataSequence.V3> invCDFL = new List<CDFL.Models.Files.Invoice.DataSequence.V3>();
+
+			if ((from d in doit.AsEnumerable() where d.type == "BBV3" select d.type).Count() > 0 )
+			{
+				dir = @"c:\temp\IC_EDI\BBV3\";
+				if ((from d in doit.AsEnumerable() where d.type == "BBV3" && d.read == "READ:Y" select d.read).Count() > 0)
+				{
+					using (BBV3.Logic.Data.PurchaseOrder.Files bbvPO = new BBV3.Logic.Data.PurchaseOrder.Files())
+					{
+						//order.Add(filesPO.ReadFile(@"c:\temp\IC_EDI\V3_SMPL_PO_FBO.txt"));
+						orderBBV3.Add(bbvPO.ReadFile($"{dir}V3_SMPL_PO_FBO_CRLF.TXT"));
+					}
+					using (BBV3.Logic.Data.PurchaseAcknowledgement.Files bbvACK = new BBV3.Logic.Data.PurchaseAcknowledgement.Files())
+					{
+						//ack.Add(filesACK.ReadFile(@"c:\temp\IC_EDI\V3_SMPL_POA_FBC.txt"));
+						ackBBV3.Add(bbvACK.ReadFile($"{dir}V3_SMPL_POA_FBC_CRLF.txt"));
+					}
+					using (BBV3.Logic.Data.ShipNotice.Files bbvASN = new BBV3.Logic.Data.ShipNotice.Files())
+					{
+						asnBBV3.Add(bbvASN.ReadFile($"{dir}V3_SMPL_ASN_PBS.txt"));
+					}
+					using (BBV3.Logic.Data.Invoice.Files bbvINV = new BBV3.Logic.Data.Invoice.Files())
+					{
+						invBBV3.Add(bbvINV.ReadFile($"{dir}V3_SMPL_INV_BIN.txt"));
+					}
+				}
+				if ((from d in doit.AsEnumerable() where d.type == "BBV3" && d.write == "WRITE:Y" select d.write).Count() > 0)
+				{
+					using (BBV3.Logic.Data.PurchaseOrder.Files bbvPO = new BBV3.Logic.Data.PurchaseOrder.Files())
+					{
+						if (orderBBV3 != null && orderBBV3.Count > 0)
+						{
+							counter = 0;
+							foreach (BBV3.Models.Files.PurchaseOrder.DataSequence.V3 po in orderBBV3)
+							{
+								bbvPO.WriteFile($@"{dir}out\PO__{counter++.ToString("000")}_{DateTime.Now.DateTimeForFilename()}.fbo{ext}", po);
+							}
+						}
+					}
+					using (BBV3.Logic.Data.PurchaseAcknowledgement.Files bbvACK = new BBV3.Logic.Data.PurchaseAcknowledgement.Files())
+					{
+						if (ackBBV3 != null && ackBBV3.Count > 0)
+						{
+							counter = 0;
+							foreach (BBV3.Models.Files.PurchaseAcknowledgement.DataSequence.V3 poa in ackBBV3)
+							{
+								bbvACK.WriteFile($@"{dir}out\POA_{counter++.ToString("000")}_{DateTime.Now.DateTimeForFilename()}.fbc{ext}", poa);
+							}
+						}
+
+					}
+					using (BBV3.Logic.Data.ShipNotice.Files bbvASN = new BBV3.Logic.Data.ShipNotice.Files())
+					{
+						if (asnBBV3 != null && asnBBV3.Count > 0)
+						{
+							counter = 0;
+							foreach (BBV3.Models.Files.ShipNotice.DataSequence.V3 asn in asnBBV3)
+							{
+								bbvASN.WriteFile($@"{dir}out\ASN_{counter++.ToString("000")}_{DateTime.Now.DateTimeForFilename()}.pbs{ext}", asn);
+							}
+						}
+					}
+					using (BBV3.Logic.Data.Invoice.Files bbvINV = new BBV3.Logic.Data.Invoice.Files())
+					{
+						if (invBBV3 != null && invBBV3.Count > 0)
+						{
+							counter = 0;
+							foreach (BBV3.Models.Files.Invoice.DataSequence.V3 inv in invBBV3)
+							{
+								bbvINV.WriteFile($@"{dir}out\INV_{counter++.ToString("000")}_{DateTime.Now.DateTimeForFilename()}.bin{ext}", inv);
+							}
+						}
+					}
+				}
+
+			}
+			if ((from d in doit.AsEnumerable() where d.type== "CDFL" select d.type).Count() > 0)
+			{
+				dir = @"c:\temp\IC_EDI\CDFL\";
+				if ((from d in doit.AsEnumerable() where d.type == "CDFL" && d.read == "READ:Y" select d.read).Count() > 0)
+				{
+					using (CDFL.Logic.Data.PurchaseOrder.Files cdfPO = new CDFL.Logic.Data.PurchaseOrder.Files())
+					{
+						//orderCDFL.Add(cdfPO.ReadFile($"{dir}CDFL PO Example Vers 03{ext}"));
+						//orderCDFL.Add(cdfPO.ReadFile($"{dir}CDFL PO Example 2 Vers 03{ext}"));
+						//orderCDFL.Add(cdfPO.ReadFile($"{dir}CDFL PO Example Multiple{ext}"));
+					}
+					using (CDFL.Logic.Data.PurchaseAcknowledgement.Files cdfACK = new CDFL.Logic.Data.PurchaseAcknowledgement.Files())
+					{
+						//ackCDFL.Add(cdfACK.ReadFile($"{dir}CDFL POA Example 2 Vers 03{ext}"));
+						//ackCDFL.Add(cdfACK.ReadFile($"{dir}CDFL POA Example Vers 03{ext}"));
+					}
+					using (CDFL.Logic.Data.ShipNotice.Files cdfASN = new CDFL.Logic.Data.ShipNotice.Files())
+					{
+						//asnCDFL.Add(cdfASN.ReadFile($"{dir}ASN1 Vers 03{ext}"));
+						asnCDFL.Add(cdfASN.ReadFile($"{dir}ASN2 Vers 03{ext}"));
+					}
+					using (CDFL.Logic.Data.Invoice.Files cdfINV = new CDFL.Logic.Data.Invoice.Files())
+					{
+						//++invCDFL.Add(cdfINV.ReadFile($"{dir}INV Vers 03{ext}"));
+					}
+				}
+				if ((from d in doit.AsEnumerable() where d.type == "CDFL" && d.write == "WRITE:Y" select d.write).Count() > 0)
+				{
+					using (CDFL.Logic.Data.PurchaseOrder.Files cdfPO = new CDFL.Logic.Data.PurchaseOrder.Files())
+					{
+						if (orderCDFL != null && orderCDFL.Count > 0)
+						{
+							counter = 0;
+							foreach(CDFL.Models.Files.PurchaseOrder.DataSequence.V3 po in orderCDFL)
+							{								
+								cdfPO.WriteFile($@"{dir}out\PO__{counter++.ToString("000")}_{DateTime.Now.DateTimeForFilename()}.fbo{ext}", po );
+							}
+						}
+					}
+					using (CDFL.Logic.Data.PurchaseAcknowledgement.Files cdfACK = new CDFL.Logic.Data.PurchaseAcknowledgement.Files())
+					{
+						if(ackCDFL != null && ackCDFL.Count > 0)
+						{
+							counter = 0;
+							foreach(CDFL.Models.Files.PurchaseAcknowledgement.DataSequence.V3 poa in ackCDFL)
+							{
+								cdfACK.WriteFile($@"{dir}out\POA_{counter++.ToString("000")}_{DateTime.Now.DateTimeForFilename()}.fbc{ext}", poa );
+							}
+						}
+
+					}
+					using (CDFL.Logic.Data.ShipNotice.Files cdfASN = new CDFL.Logic.Data.ShipNotice.Files())
+					{
+						if(asnCDFL != null && asnCDFL.Count > 0)
+						{
+							counter = 0;
+							foreach(List<CDFL.Models.Files.ShipNotice.DataSequence.V3> asnList in asnCDFL)
+							{
+								cdfASN.WriteFile($@"{dir}out\ASN_{counter++.ToString("000")}_{DateTime.Now.DateTimeForFilename()}.pbs{ext}", asnList );
+							}
+						}
+					}
+					using (CDFL.Logic.Data.Invoice.Files cdfINV = new CDFL.Logic.Data.Invoice.Files())
+					{
+						if (invCDFL != null && invCDFL.Count > 0)
+						{
+							counter = 0;
+							foreach (CDFL.Models.Files.Invoice.DataSequence.V3 inv in invCDFL)
+							{
+								cdfINV.WriteFile($@"{dir}out\INV_{counter++.ToString("000")}_{DateTime.Now.DateTimeForFilename()}.bin{ext}", inv );
+							}
+						}
+					}
+				}
+			}
+			*/

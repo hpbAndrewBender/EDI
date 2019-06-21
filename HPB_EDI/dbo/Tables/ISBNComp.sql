@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[ISBNComp] (
+    [ISBN10] NVARCHAR (12) NULL,
+    [ISBN13] NVARCHAR (15) NULL
+);
+

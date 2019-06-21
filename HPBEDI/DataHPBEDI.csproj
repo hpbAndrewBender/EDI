@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Configurations>Debug;Release;Debug NoSQL</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\X12_3060\**" />
+    <EmbeddedResource Remove="Models\X12_3060\**" />
+    <None Remove="Models\X12_3060\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Models\X12_3060\MetaCodes.cs" />
+    <Compile Include="Models\X12_3060\MetaData.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NLog" Version="4.6.4" />
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IO\CommonLib.csproj" />
+  </ItemGroup>
+
+</Project>

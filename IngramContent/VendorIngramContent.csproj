@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Configurations>Debug;Release;Debug NoSQL</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\Invoice\**" />
+    <Compile Remove="Models\PurchaseAck\**" />
+    <Compile Remove="Models\PurchaseOrd\**" />
+    <Compile Remove="Models\ShipNotice\**" />
+    <EmbeddedResource Remove="Models\Invoice\**" />
+    <EmbeddedResource Remove="Models\PurchaseAck\**" />
+    <EmbeddedResource Remove="Models\PurchaseOrd\**" />
+    <EmbeddedResource Remove="Models\ShipNotice\**" />
+    <None Remove="Models\Invoice\**" />
+    <None Remove="Models\PurchaseAck\**" />
+    <None Remove="Models\PurchaseOrd\**" />
+    <None Remove="Models\ShipNotice\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentFTP" Version="25.0.3" />
+    <PackageReference Include="NLog" Version="4.6.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BBV3\FormatBBV3.csproj" />
+    <ProjectReference Include="..\CDFL\FormatCDFL.csproj" />
+    <ProjectReference Include="..\HPBEDI\DataHPBEDI.csproj" />
+  </ItemGroup>
+
+</Project>

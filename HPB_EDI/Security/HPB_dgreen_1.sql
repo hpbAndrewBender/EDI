@@ -1,0 +1,3 @@
+﻿CREATE LOGIN [HPB\dgreen]
+    FROM WINDOWS WITH DEFAULT_LANGUAGE = [us_english];
+

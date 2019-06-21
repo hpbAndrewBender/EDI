@@ -1,0 +1,3 @@
+﻿CREATE SCHEMA [importX12]
+    AUTHORIZATION [dbo];
+
