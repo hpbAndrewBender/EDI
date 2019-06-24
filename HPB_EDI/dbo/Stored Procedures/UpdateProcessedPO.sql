@@ -3,7 +3,7 @@
 -- Create date: <10/9/2013>
 -- Description:	<Update PO processed flag and date......>
 -- =============================================
-CREATE PROCEDURE dbo.UpdateProcessedPO
+CREATE PROCEDURE [dbo].[UpdateProcessedPO]
 	@PONumber char(6)
 AS
 BEGIN
@@ -11,8 +11,8 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-    update HPB_EDI..[850_PO_Hdr]
-    set Processed = 1, ProcessedDateTime = GETDATE()
-    where PONumber = @PONumber
-    
+    update [850_PO_Hdr]
+		set	 Processed = 1
+			,ProcessedDateTime = GETDATE()
+    where PONumber = @PONumber    
 END

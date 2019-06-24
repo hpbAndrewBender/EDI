@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [importCDFL].[PurchaseOrder_R10_ClientHeader] (
     [Id]                                INT          IDENTITY (1, 1) NOT NULL,
+    [BatchId]                           INT          NULL,
     [RecordCode]                        TINYINT      NOT NULL,
     [SequenceNumber]                    INT          NOT NULL,
     [PONumber]                          VARCHAR (22) NOT NULL,
@@ -13,6 +14,8 @@
     [BillToIndicator]                   BIT          NOT NULL,
     CONSTRAINT [PK_PurchaseOrder_R10_ClientHeader] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

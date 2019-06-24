@@ -1,4 +1,5 @@
-﻿CREATE VIEW [810_INV_HDR]
+﻿
+CREATE VIEW [dbo].[810_INV_HDR]
 			AS
 			SELECT	 [InvoiceId] 
 					,CAST([InvoiceNo] AS NVARCHAR(20)) AS [InvoiceNo]
@@ -22,4 +23,4 @@
 					,[InvoiceACKSent]
 					,CAST([InvoiceAckNo] AS NVARCHAR(10)) AS [InvoiceAckNo]
 					,CAST([GSNo] AS NVARCHAR(10)) AS [GSNo]
-			FROM edi.InvoiceHeader
+			FROM BLK.InvoiceHeader

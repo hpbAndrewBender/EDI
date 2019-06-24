@@ -17,7 +17,7 @@ namespace FormatCDFL.Logic.Data.ShipNotice
 			int batchnumber = 0;
 			try
 			{
-				batchnumber = CommonLib.Logic.Globals.CreateBatch(filename, vendor, 4);
+				batchnumber = CommonLib.Logic.Globals.CreateBatch("CDFL", filename, vendor, 4);
 			}
 			catch (Exception ex)
 			{
@@ -89,6 +89,7 @@ namespace FormatCDFL.Logic.Data.ShipNotice
 			int shipmentCount = 0;
 			int detailCount = 0;
 			int noticeCount = 0;
+			bool savedokay = false;
 
 			try
 			{
@@ -183,8 +184,9 @@ namespace FormatCDFL.Logic.Data.ShipNotice
 					{
 						file.Add(notice);
 						notice = null;
-					}
+					}					
 				}
+				using (SQL sql = new SQL(batchnumber, saveRCR, saveROD, saveROR)) { savedokay = sql.Successful; }
 			}
 			catch (Exception ex)
 			{
@@ -227,6 +229,7 @@ namespace FormatCDFL.Logic.Data.ShipNotice
 			// GC.SuppressFinalize(this);
 		}
 		#endregion
+
 	}
 }
 

@@ -17,7 +17,7 @@ namespace FormatCDFL.Logic.Data.Invoice
 			int batchnumber = 0;
 			try
 			{
-				batchnumber = CommonLib.Logic.Globals.CreateBatch(filename, vendor, 4);
+				batchnumber = CommonLib.Logic.Globals.CreateBatch("CDFL", filename, vendor, 4);
 			}
 			catch (Exception ex)
 			{
@@ -97,6 +97,7 @@ namespace FormatCDFL.Logic.Data.Invoice
 			string typename;
 			int invoiceCount = 0;
 			int detailCount = 0;
+			bool savedokay = false;
 
 			try
 			{
@@ -216,7 +217,7 @@ namespace FormatCDFL.Logic.Data.Invoice
 						file.Invoices.Add(invoice);
 						invoice = null;
 					}
-					using (SQL sql = new SQL()) { sql.Save(batchnumber, r01, r15, r45, r46, r48, r49, r55, r57, r95); } // add batch info
+					using (SQL sql = new SQL(batchnumber, r01, r15, r45, r46, r48, r49, r55, r57, r95)) { savedokay = sql.Successful; }
 				}
 			}
 			catch (Exception ex)

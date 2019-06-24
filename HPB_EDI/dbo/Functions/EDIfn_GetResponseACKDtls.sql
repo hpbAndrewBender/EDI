@@ -41,9 +41,3 @@ BEGIN
 	---- Return the result of the function
 	RETURN @lines
 END
-
-
-
-
-
-

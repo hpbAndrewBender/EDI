@@ -48,11 +48,14 @@ select distinct h.ShipID,h.ASNNo+'-'+h.PONumber,v.ParentFolder,
 		+CHAR(13) + CHAR(10)
 		+'IEA*1*'+RIGHT('0000000000'+h.PONumber,9)+'~')),1)
 		end [FileText]
-from HPB_EDI..[856_ASN_Hdr] h with(nolock) inner join HPB_EDI..[856_ASN_Dtl] d with(nolock) on h.ShipID=d.ShipID
-		inner join HPB_EDI..Vendor_SAN_Codes v with(nolock) on h.VendorID=v.VendorID
-where h.ASNACKSent=0 and v.processor='PUBNET' and h.VendorID in (select VendorID from HPB_EDI..Vendor_SAN_Codes where ASN997=1)
-
-
+from [856_ASN_Hdr] h with(nolock) 
+	inner join [856_ASN_Dtl] d with(nolock) 
+		on h.ShipID=d.ShipID
+	inner join Vendor_SAN_Codes v with(nolock) 
+		on h.VendorID=v.VendorID
+where h.ASNACKSent=0 
+	and v.processor='PUBNET' 
+	and h.VendorID in (select VendorID from Vendor_SAN_Codes where ASN997=1)
 END
 
 

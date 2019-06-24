@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using CommonLib.Logic;
 using CommonLib.Extensions;
+using System.Linq;
 
 namespace FormatCDFL.Logic.Data.PurchaseOrder
 {
@@ -16,7 +17,7 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			int batchnumber = 0;
 			try
 			{
-				batchnumber = CommonLib.Logic.Globals.CreateBatch(filename, vendor, 4);
+				batchnumber = CommonLib.Logic.Globals.CreateBatch("CDFL", filename, vendor, 4);
 			}
 			catch (Exception ex)
 			{
@@ -28,6 +29,7 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 		public bool WriteFileAddingSequence(string filename, Models.Files.PurchaseOrder.DataSequence.V3 data, bool checkseq)
 		{
 			List<object> writelist = new List<object>();
+			List<(byte code, Type type)> used = new List<(byte code, Type type)>();
 			bool success = false;
 			short seqnum = 1;
 			try
@@ -36,21 +38,26 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 
 				data.FileHeaderRecord.SequenceNumber = seqnum++;
 				writelist.Add(data.FileHeaderRecord);
+				if ((from u in used where u.code == data.FileHeaderRecord.RecordCode select u.code).Count() == 0) { used.Add((data.FileHeaderRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R00_FileHeader))); }
+
 				if (data.PurchaseOrders != null && data.PurchaseOrders.Count > 0)
 				{
 					foreach (Models.Files.PurchaseOrder.DataSequence.PurchaseOrder item in data.PurchaseOrders)
 					{
 						item.ClientHeaderRecord.SequenceNumber = seqnum++;
 						writelist.Add(item.ClientHeaderRecord);
+						if ((from u in used where u.code == item.ClientHeaderRecord.RecordCode select u.code).Count() == 0) { used.Add((item.ClientHeaderRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R10_ClientHeader))); }
 						if (Common.IsValid(item.FixedHandlingInstructionsRecord, checkseq))
 						{
 							item.FixedHandlingInstructionsRecord.SequenceNumber = seqnum++;
 							writelist.Add(item.FixedHandlingInstructionsRecord);
+							if ((from u in used where u.code == item.FixedHandlingInstructionsRecord.RecordCode select u.code).Count() == 0) { used.Add((item.FixedHandlingInstructionsRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions))); }
 						}
 						if (Common.IsValid(item.PurchaseOrderOptionsRecord, checkseq))
 						{
 							item.PurchaseOrderOptionsRecord.SequenceNumber = seqnum++;
 							writelist.Add(item.PurchaseOrderOptionsRecord);
+							if ((from u in used where u.code == item.PurchaseOrderOptionsRecord.RecordCode select u.code).Count() == 0) { used.Add((item.PurchaseOrderOptionsRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R21_PurchaseOrderOptions))); }
 						}
 						//?? if (item.PurchaseOrderDetails != null && item.PurchaseOrderDetails.Count > 0)
 						//?? {
@@ -60,11 +67,13 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 						//?? 		{
 						//?? 			detail.LineItemDetail.SequenceNumber = seqnum++;
 						//?? 			writelist.Add(detail.LineItemDetail);
+						//??			if ((from u in used where u.code == detail.LineItemDetail.RecordCode select u.code).Count() == 0) { used.Add((detail.LineItemDetail.RecordCode, typeof(Models.Files.PurchaseOrder.``))); }
 						//?? 		}
 						//?? 		if (Common.IsValid(detail.AdditionalLineItemDetail, checkseq))
 						//?? 		{
 						//?? 			detail.AdditionalLineItemDetail.SequenceNumber = seqnum++;
 						//?? 			writelist.Add(detail.AdditionalLineItemDetail);
+						//??			if ((from u in used where u.code == detail.AdditionalLineItemDetail.RecordCode select u.code).Count() == 0) { used.Add((detail.AdditionalLineItemDetail.RecordCode, typeof(Models.Files.PurchaseOrder.``))); }
 						//?? 		}
 						//?? 		if (detail.Imprint != null && detail.Imprint.Count > 0)
 						//?? 		{
@@ -74,6 +83,7 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 						//?? 				{
 						//?? 					imprint.SequenceNumber = seqnum++;
 						//?? 					writelist.Add(imprint);
+						//??					if ((from u in used where u.code == imprint.RecordCode select u.code).Count() == 0) { used.Add((imprint.RecordCode, typeof(Models.Files.PurchaseOrder.``))); }
 						//?? 				}
 						//?? 			}
 						//?? 		}
@@ -81,6 +91,7 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 						//?? 		{
 						//?? 			detail.StickerBarcodeDataRecord.SequenceNumber = seqnum++;
 						//?? 			writelist.Add(detail.StickerBarcodeDataRecord);
+						//??			if ((from u in used where u.code == detail.StickerBarcodeDataRecord.RecordCode select u.code).Count() == 0) { used.Add((detail.StickerBarcodeDataRecord.RecordCode, typeof(Models.Files.PurchaseOrder.``))); }
 						//?? 		}
 						//?? 		//--if (detail.StickerTextLines != null && detail.StickerTextLines.Count > 0)
 						//?? 		//--{
@@ -90,6 +101,7 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 						//?? 		//--		{
 						//?? 		//--			text.SequenceNumber = seqnum++;
 						//?? 		//--			writelist.Add(text);
+						//??		//--			if ((from u in used where u.code == text.RecordCode select u.code).Count() == 0) { used.Add((text.RecordCode, typeof(Models.Files.PurchaseOrder.``))); }
 						//?? 		//--		}
 						//?? 		//--	}
 						//?? 		//--}
@@ -102,6 +114,7 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 				//?? {
 				//?? 	data.PurchaseOrderTrailerRecord.SequenceNumber = seqnum++;
 				//?? 	writelist.Add(data.PurchaseOrderTrailerRecord);
+				//??	if ((from u in used where u.code == data.PurchaseOrderTrailerRecord.RecordCode select u.code).Count() == 0) { used.Add((data.PurchaseOrderTrailerRecord.RecordCode, typeof(Models.Files.PurchaseOrder.``))); }
 				//?? }
 				if (Common.IsValid(data.FileTrailerRecord, checkseq))
 				{
@@ -110,28 +123,9 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 				}
 				MultiRecordEngine engine = new MultiRecordEngine
 				(
-					typeof(Models.Files.PurchaseOrder.R00_FileHeader),
-					typeof(Models.Files.PurchaseOrder.R10_ClientHeader),
-					typeof(Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions),
-					typeof(Models.Files.PurchaseOrder.R21_PurchaseOrderOptions),
-					typeof(Models.Files.PurchaseOrder.R24_CustomerCost),
-					typeof(Models.Files.PurchaseOrder.R25_CustomerBillToName),
-					typeof(Models.Files.PurchaseOrder.R26_CustomerBillToPhoneNumber),
-					typeof(Models.Files.PurchaseOrder.R27_CustomerBillToAddressLine),
-					typeof(Models.Files.PurchaseOrder.R29_CustomerBillToCityStateZip),
-					typeof(Models.Files.PurchaseOrder.R30_RecipientShipToName),
-					typeof(Models.Files.PurchaseOrder.R31_RecipientShipToPhone),
-					typeof(Models.Files.PurchaseOrder.R32_ShippingRecordRecipientAddressLine),
-					typeof(Models.Files.PurchaseOrder.R34_RecipientShippingRecordCityStateZip),
-					typeof(Models.Files.PurchaseOrder.R35_DropShipDetail),
-					typeof(Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions),
-					typeof(Models.Files.PurchaseOrder.R37_MarketingMessage),
-					typeof(Models.Files.PurchaseOrder.R38_GiftMessage),
-					typeof(Models.Files.PurchaseOrder.R40_LineItem),
-					typeof(Models.Files.PurchaseOrder.R41_AdditionalLineItem),
-					typeof(Models.Files.PurchaseOrder.R45_Imprint),
-					typeof(Models.Files.PurchaseOrder.R50_PurchaseOrderControl),
-					typeof(Models.Files.PurchaseOrder.R90_FileTrailer)
+					(from u in used
+					 orderby u.code
+					 select u.type).Distinct().ToArray()
 				)
 				{
 					RecordSelector = new RecordTypeSelector(Models.Files.Invoice.Selectors.V3.Custom)
@@ -273,31 +267,31 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			return success;
 		}
 
-		public Models.Files.PurchaseOrder.DataSequence.V3 ReadFile(string filename)
+		public Models.Files.PurchaseOrder.DataSequence.V3 ReadFile(string filename, int batchnumber)
 		{
-			List<Models.Files.PurchaseOrder.R00_FileHeader> saveR00 = null;
-			List<Models.Files.PurchaseOrder.R10_ClientHeader> saveR10 = null;
-			List<Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions> saveR20 = null;
-			List<Models.Files.PurchaseOrder.R21_PurchaseOrderOptions> saveR21 = null;
-			List<Models.Files.PurchaseOrder.R24_CustomerCost> saveR24 = null;
-			List<Models.Files.PurchaseOrder.R25_CustomerBillToName> saveR25 = null;
-			List<Models.Files.PurchaseOrder.R26_CustomerBillToPhoneNumber> saveR26 = null;
-			List<Models.Files.PurchaseOrder.R27_CustomerBillToAddressLine> saveR27 = null;
-			List<Models.Files.PurchaseOrder.R29_CustomerBillToCityStateZip> saveR29 = null;
-			List<Models.Files.PurchaseOrder.R30_RecipientShipToName> saveR30 = null;
-			List<Models.Files.PurchaseOrder.R31_RecipientShipToPhone> saveR31 = null;
-			List<Models.Files.PurchaseOrder.R32_ShippingRecordRecipientAddressLine> saveR32 = null;
-			List<Models.Files.PurchaseOrder.R34_RecipientShippingRecordCityStateZip> saveR34 = null;
-			List<Models.Files.PurchaseOrder.R35_DropShipDetail> saveR35 = null;
-			List<Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions> saveR36 = null;
-			List<Models.Files.PurchaseOrder.R37_MarketingMessage> saveR37 = null;
-			List<Models.Files.PurchaseOrder.R38_GiftMessage> saveR38 = null;
-			List<Models.Files.PurchaseOrder.R40_LineItem> saveR40 = null;
-			List<Models.Files.PurchaseOrder.R41_AdditionalLineItem> saveR41 = null;
-			List<Models.Files.PurchaseOrder.R42_LineItemGiftMessage> saveR42 = null;
-			List<Models.Files.PurchaseOrder.R45_Imprint> saveR45 = null;
-			List<Models.Files.PurchaseOrder.R50_PurchaseOrderControl> saveR50 = null;
-			List<Models.Files.PurchaseOrder.R90_FileTrailer> saveR90 = null;
+			List<Models.Files.PurchaseOrder.R00_FileHeader> r00 = null;
+			List<Models.Files.PurchaseOrder.R10_ClientHeader> r10 = null;
+			List<Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions> r20 = null;
+			List<Models.Files.PurchaseOrder.R21_PurchaseOrderOptions> r21 = null;
+			List<Models.Files.PurchaseOrder.R24_CustomerCost> r24 = null;
+			List<Models.Files.PurchaseOrder.R25_CustomerBillToName> r25 = null;
+			List<Models.Files.PurchaseOrder.R26_CustomerBillToPhoneNumber> r26 = null;
+			List<Models.Files.PurchaseOrder.R27_CustomerBillToAddressLine> r27 = null;
+			List<Models.Files.PurchaseOrder.R29_CustomerBillToCityStateZip> r29 = null;
+			List<Models.Files.PurchaseOrder.R30_RecipientShipToName> r30 = null;
+			List<Models.Files.PurchaseOrder.R31_RecipientShipToPhone> r31 = null;
+			List<Models.Files.PurchaseOrder.R32_ShippingRecordRecipientAddressLine> r32 = null;
+			List<Models.Files.PurchaseOrder.R34_RecipientShippingRecordCityStateZip> r34 = null;
+			List<Models.Files.PurchaseOrder.R35_DropShipDetail> r35 = null;
+			List<Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions> r36 = null;
+			List<Models.Files.PurchaseOrder.R37_MarketingMessage> r37 = null;
+			List<Models.Files.PurchaseOrder.R38_GiftMessage> r38 = null;
+			List<Models.Files.PurchaseOrder.R40_LineItem> r40 = null;
+			List<Models.Files.PurchaseOrder.R41_AdditionalLineItem> r41 = null;
+			List<Models.Files.PurchaseOrder.R42_LineItemGiftMessage> r42 = null;
+			List<Models.Files.PurchaseOrder.R45_Imprint> r45 = null;
+			List<Models.Files.PurchaseOrder.R50_PurchaseOrderControl> r50 = null;
+			List<Models.Files.PurchaseOrder.R90_FileTrailer> r90 = null;
 			//
 			Models.Files.PurchaseOrder.DataSequence.V3 file = null;
 			Models.Files.PurchaseOrder.DataSequence.PurchaseOrder order = null;
@@ -306,6 +300,7 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			string typename = string.Empty;
 			int orderCount = 0;
 			int itemCount = 0;
+			bool savedokay = false;
 
 			try
 			{
@@ -348,14 +343,14 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 						switch (typename)
 						{
 							case "R00_FILEHEADER":
-								Common.Initialize(ref saveR00);
-								saveR00.Add((Models.Files.PurchaseOrder.R00_FileHeader)rec);
-								file.FileHeaderRecord = saveR00.LastItem();
+								Common.Initialize(ref r00);
+								r00.Add((Models.Files.PurchaseOrder.R00_FileHeader)rec);
+								file.FileHeaderRecord = r00.LastItem();
 								break;
 
 							case "R10_CLIENTHEADER":
-								Common.Initialize(ref saveR10);
-								saveR10.Add((Models.Files.PurchaseOrder.R10_ClientHeader)rec);
+								Common.Initialize(ref r10);
+								r10.Add((Models.Files.PurchaseOrder.R10_ClientHeader)rec);
 								if (orderCount > 0)
 								{
 									if (file.PurchaseOrders == null) { file.PurchaseOrders = new List<Models.Files.PurchaseOrder.DataSequence.PurchaseOrder>(); }
@@ -368,170 +363,170 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 								orderCount++;
 								order = new Models.Files.PurchaseOrder.DataSequence.PurchaseOrder
 								{
-									ClientHeaderRecord = saveR10.LastItem()
+									ClientHeaderRecord = r10.LastItem()
 								};
 								break;
 
 							case "R20_FIXEDSPECIALHANDLINGINSTRUCTIONS":
-								Common.Initialize(ref saveR20);
-								saveR20.Add((Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions)rec);
-								order.FixedHandlingInstructionsRecord = saveR20.LastItem();
+								Common.Initialize(ref r20);
+								r20.Add((Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions)rec);
+								order.FixedHandlingInstructionsRecord = r20.LastItem();
 								break;
 
 							case "R21_PURCHASEORDEROPTIONS":
-								Common.Initialize(ref saveR21);
-								saveR21.Add((Models.Files.PurchaseOrder.R21_PurchaseOrderOptions)rec);
-								order.PurchaseOrderOptionsRecord = saveR21.LastItem();
+								Common.Initialize(ref r21);
+								r21.Add((Models.Files.PurchaseOrder.R21_PurchaseOrderOptions)rec);
+								order.PurchaseOrderOptionsRecord = r21.LastItem();
 								break;
 
 							case "R24_CUSTOMERCOST":
-								Common.Initialize(ref saveR24);
-								saveR24.Add((Models.Files.PurchaseOrder.R24_CustomerCost)rec);
-								order.CustomerCostRecord = saveR24.LastItem();
+								Common.Initialize(ref r24);
+								r24.Add((Models.Files.PurchaseOrder.R24_CustomerCost)rec);
+								order.CustomerCostRecord = r24.LastItem();
 								break;
 
 							case "R25_CUSTOMERBILLTONAME":
-								Common.Initialize(ref saveR25);
-								saveR25.Add((Models.Files.PurchaseOrder.R25_CustomerBillToName)rec);
-								order.CustomerBillToNameRecord = saveR25.LastItem();
+								Common.Initialize(ref r25);
+								r25.Add((Models.Files.PurchaseOrder.R25_CustomerBillToName)rec);
+								order.CustomerBillToNameRecord = r25.LastItem();
 								break;
 
 							case "R26_CUSTOMERBILLTOPHONENUMBER":
-								Common.Initialize(ref saveR26);
-								saveR26.Add((Models.Files.PurchaseOrder.R26_CustomerBillToPhoneNumber)rec);
-								order.CustomerBillToPhoneNumberRecord = saveR26.LastItem();
+								Common.Initialize(ref r26);
+								r26.Add((Models.Files.PurchaseOrder.R26_CustomerBillToPhoneNumber)rec);
+								order.CustomerBillToPhoneNumberRecord = r26.LastItem();
 								break;
 
 							case "R27_CUSTOMERBILLTOADDRESSLINE":
-								Common.Initialize(ref saveR27);
-								saveR27.Add((Models.Files.PurchaseOrder.R27_CustomerBillToAddressLine)rec);
+								Common.Initialize(ref r27);
+								r27.Add((Models.Files.PurchaseOrder.R27_CustomerBillToAddressLine)rec);
 								if (order.CustomerBillToAddressLine == null) { order.CustomerBillToAddressLine = new List<Models.Files.PurchaseOrder.R27_CustomerBillToAddressLine>(); }
-								if(order.CustomerBillToAddressLine.Count < file.Maxes[typename])
+								if (order.CustomerBillToAddressLine.Count < file.Maxes[typename])
 								{
-									order.CustomerBillToAddressLine.Add(saveR27.LastItem());
+									order.CustomerBillToAddressLine.Add(r27.LastItem());
 								}
 								break;
 
 							case "R29_CUSTOMERBILLTOCITYSTATEZIP":
-								Common.Initialize(ref saveR29);
-								saveR29.Add((Models.Files.PurchaseOrder.R29_CustomerBillToCityStateZip)rec);
-								order.CustomerBillToCityStateZipRecord = saveR29.LastItem();
+								Common.Initialize(ref r29);
+								r29.Add((Models.Files.PurchaseOrder.R29_CustomerBillToCityStateZip)rec);
+								order.CustomerBillToCityStateZipRecord = r29.LastItem();
 								break;
 
 							case "R30_RECIPIENTSHIPTONAME":
-								Common.Initialize(ref saveR30);
-								saveR30.Add((Models.Files.PurchaseOrder.R30_RecipientShipToName)rec);
-								order.RecipientShipToNameRecord = saveR30.LastItem();
+								Common.Initialize(ref r30);
+								r30.Add((Models.Files.PurchaseOrder.R30_RecipientShipToName)rec);
+								order.RecipientShipToNameRecord = r30.LastItem();
 								break;
 
 							case "R31_RECIPIENTSHIPTOPHONE":
-								Common.Initialize(ref saveR31);
-								saveR31.Add((Models.Files.PurchaseOrder.R31_RecipientShipToPhone)rec);
-								order.RecipientShipToPhoneRecord = saveR31.LastItem();
+								Common.Initialize(ref r31);
+								r31.Add((Models.Files.PurchaseOrder.R31_RecipientShipToPhone)rec);
+								order.RecipientShipToPhoneRecord = r31.LastItem();
 								break;
 
 							case "R32_SHIPPINGRECORDRECIPIENTADDRESSLINE":
-								Common.Initialize(ref saveR32);
-								saveR32.Add((Models.Files.PurchaseOrder.R32_ShippingRecordRecipientAddressLine)rec);
+								Common.Initialize(ref r32);
+								r32.Add((Models.Files.PurchaseOrder.R32_ShippingRecordRecipientAddressLine)rec);
 								if (order.ShipRecordRecipientAddressLine == null) { order.ShipRecordRecipientAddressLine = new List<Models.Files.PurchaseOrder.R32_ShippingRecordRecipientAddressLine>(); }
-								if(order.ShipRecordRecipientAddressLine.Count < file.Maxes[typename])
+								if (order.ShipRecordRecipientAddressLine.Count < file.Maxes[typename])
 								{
-									order.ShipRecordRecipientAddressLine.Add(saveR32.LastItem());
-								}								
+									order.ShipRecordRecipientAddressLine.Add(r32.LastItem());
+								}
 								break;
 
 							case "R34_RECIPIENTSHIPPINGRECORDCITYSTATEZIP":
-								Common.Initialize(ref saveR34);
-								saveR34.Add((Models.Files.PurchaseOrder.R34_RecipientShippingRecordCityStateZip)rec);
-								order.RecipShippingRecordCityStateZipRecord = saveR34.LastItem();
+								Common.Initialize(ref r34);
+								r34.Add((Models.Files.PurchaseOrder.R34_RecipientShippingRecordCityStateZip)rec);
+								order.RecipShippingRecordCityStateZipRecord = r34.LastItem();
 								break;
 
 							case "R35_DROPSHIPDETAIL":
-								Common.Initialize(ref saveR35);
-								saveR35.Add((Models.Files.PurchaseOrder.R35_DropShipDetail)rec);
-								order.DropShipDetailRecord = saveR35.LastItem();
+								Common.Initialize(ref r35);
+								r35.Add((Models.Files.PurchaseOrder.R35_DropShipDetail)rec);
+								order.DropShipDetailRecord = r35.LastItem();
 								break;
 
 							case "R36_SPECIALDELIVERYINSTRUCTIONS":
-								Common.Initialize(ref saveR36);
-								saveR36.Add((Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions)rec);
-								if(order.SpecialDeliveryInstructions == null) { order.SpecialDeliveryInstructions = new List<Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions>(); }
+								Common.Initialize(ref r36);
+								r36.Add((Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions)rec);
+								if (order.SpecialDeliveryInstructions == null) { order.SpecialDeliveryInstructions = new List<Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions>(); }
 								if (order.SpecialDeliveryInstructions.Count < file.Maxes[typename])
 								{
-									order.SpecialDeliveryInstructions.Add(saveR36.LastItem());
+									order.SpecialDeliveryInstructions.Add(r36.LastItem());
 								}
 								break;
 
 							case "R37_MARKETINGMESSAGE":
-								Common.Initialize(ref saveR37);
-								saveR37.Add((Models.Files.PurchaseOrder.R37_MarketingMessage)rec);
-								if(order.MarketingMessage == null) { order.MarketingMessage = new List<Models.Files.PurchaseOrder.R37_MarketingMessage>(); }
-								if(order.MarketingMessage.Count < file.Maxes[typename])
+								Common.Initialize(ref r37);
+								r37.Add((Models.Files.PurchaseOrder.R37_MarketingMessage)rec);
+								if (order.MarketingMessage == null) { order.MarketingMessage = new List<Models.Files.PurchaseOrder.R37_MarketingMessage>(); }
+								if (order.MarketingMessage.Count < file.Maxes[typename])
 								{
-									order.MarketingMessage.Add(saveR37.LastItem());
+									order.MarketingMessage.Add(r37.LastItem());
 								}
 								break;
 
 							case "R38_GIFTMESSAGE":
-								Common.Initialize(ref saveR38);
-								saveR38.Add((Models.Files.PurchaseOrder.R38_GiftMessage)rec);
-								if(order.GiftMessage == null) { order.GiftMessage = new List<Models.Files.PurchaseOrder.R38_GiftMessage>(); }
-								if(order.GiftMessage.Count < file.Maxes[typename])
+								Common.Initialize(ref r38);
+								r38.Add((Models.Files.PurchaseOrder.R38_GiftMessage)rec);
+								if (order.GiftMessage == null) { order.GiftMessage = new List<Models.Files.PurchaseOrder.R38_GiftMessage>(); }
+								if (order.GiftMessage.Count < file.Maxes[typename])
 								{
-									order.GiftMessage.Add(saveR38.LastItem());
+									order.GiftMessage.Add(r38.LastItem());
 								}
 								break;
 
 							case "R40_LINEITEM":
-								Common.Initialize(ref saveR40);
-								saveR40.Add((Models.Files.PurchaseOrder.R40_LineItem)rec);
+								Common.Initialize(ref r40);
+								r40.Add((Models.Files.PurchaseOrder.R40_LineItem)rec);
 								if (itemCount > 0)
 								{
 									if (order.Items == null) { order.Items = new List<Models.Files.PurchaseOrder.DataSequence.Item>(); }
 									if (item != null)
 									{
 										order.Items.Add(item);
-										item= null;
+										item = null;
 									}
 								}
 								itemCount++;
 								item = new Models.Files.PurchaseOrder.DataSequence.Item
 								{
-									LineItemRecord = saveR40.LastItem()
+									LineItemRecord = r40.LastItem()
 								};
 								break;
 
 							case "R41_ADDITIONALLINEITEM":
-								Common.Initialize(ref saveR41);
-								saveR41.Add((Models.Files.PurchaseOrder.R41_AdditionalLineItem)rec);
-								item.AdditionalLineItemRecord = saveR41.LastItem();
+								Common.Initialize(ref r41);
+								r41.Add((Models.Files.PurchaseOrder.R41_AdditionalLineItem)rec);
+								item.AdditionalLineItemRecord = r41.LastItem();
 								break;
 
 							case "R42_LINEITEMGIFTMESSAGE":
-								Common.Initialize(ref saveR42);
-								saveR42.Add((Models.Files.PurchaseOrder.R42_LineItemGiftMessage)rec);
+								Common.Initialize(ref r42);
+								r42.Add((Models.Files.PurchaseOrder.R42_LineItemGiftMessage)rec);
 								if (item.LineItemGiftMessage.Count < file.Maxes[typename])
 								{
-									item.LineItemGiftMessage.Add(saveR42.LastItem());
+									item.LineItemGiftMessage.Add(r42.LastItem());
 								}
 								break;
 
 							case "R45_IMPRINT":
-								Common.Initialize(ref saveR45);
-								saveR45.Add((Models.Files.PurchaseOrder.R45_Imprint)rec);
-								if(item.Imprint == null) { item.Imprint = new List<Models.Files.PurchaseOrder.R45_Imprint>(); }
-								if(item.Imprint.Count < file.Maxes[typename])
+								Common.Initialize(ref r45);
+								r45.Add((Models.Files.PurchaseOrder.R45_Imprint)rec);
+								if (item.Imprint == null) { item.Imprint = new List<Models.Files.PurchaseOrder.R45_Imprint>(); }
+								if (item.Imprint.Count < file.Maxes[typename])
 								{
-									item.Imprint.Add(saveR45.LastItem());
+									item.Imprint.Add(r45.LastItem());
 								}
 								break;
-						
+
 							case "R50_PURCHASEORDERCONTROL":
-								Common.Initialize(ref saveR50);
-								saveR50.Add((Models.Files.PurchaseOrder.R50_PurchaseOrderControl)rec);
-								order.PurchaseOrderControlRecord = saveR50.LastItem();
+								Common.Initialize(ref r50);
+								r50.Add((Models.Files.PurchaseOrder.R50_PurchaseOrderControl)rec);
+								order.PurchaseOrderControlRecord = r50.LastItem();
 								file.PurchaseOrders.Add(order);
-								if(item !=null)
+								if (item != null)
 								{
 									if (file.PurchaseOrders[file.PurchaseOrders.Count - 1].Items == null) { file.PurchaseOrders[file.PurchaseOrders.Count - 1].Items = new List<Models.Files.PurchaseOrder.DataSequence.Item>(); }
 									file.PurchaseOrders[file.PurchaseOrders.Count - 1].Items.Add(item);
@@ -541,9 +536,9 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 								break;
 
 							case "R90_FILETRAILER":
-								Common.Initialize(ref saveR90);
-								saveR90.Add((Models.Files.PurchaseOrder.R90_FileTrailer)rec);
-								file.FileTrailerRecord = saveR90.LastItem();
+								Common.Initialize(ref r90);
+								r90.Add((Models.Files.PurchaseOrder.R90_FileTrailer)rec);
+								file.FileTrailerRecord = r90.LastItem();
 								break;
 						}
 					}
@@ -558,6 +553,7 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 						}
 						order = null;
 					}
+					using(SQL sql = new SQL(batchnumber, r00, r10, r20,r21,r24,r25,r26,r27,r29,r30,r31,r32,r34,r35,r36,r37,r38,r40,r41,r42,r45,r50,r90)) { savedokay = sql.Successful; }
 				}
 			}
 			catch (Exception ex)

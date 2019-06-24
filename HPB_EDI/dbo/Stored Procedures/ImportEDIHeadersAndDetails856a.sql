@@ -58,14 +58,14 @@ BEGIN
 		FROM (	SELECT DISTINCT [EDIFileId]
 				FROM  [HPB_EDI].[dbo].[vuImportEDI_Unprocessed_TransactionRanges]
 				WHERE [EDIType]=@EDINumber) ranges
-			INNER JOIN [HPB_EDI].[dbo].[importEDI_ISA] isa
+			INNER JOIN [importx12].[TagISA] isa
 				ON isa.[EDIFileId]=ranges.[EDIFileId]
-			INNER JOIN [HPB_EDI].[dbo].[importEDI_GS] gs
+			INNER JOIN [importx12].[TagGS] gs
 				ON gs.[EDIFileId]=ranges.[EDIFileId]
 
 	INSERT INTO @HL (EDIFileID, ControlNumberGroup, ControlNumberTransaction, HierarchicalLevelCode, HierarchicalParentIDNumber, RangeStart)
 		SELECT hl.[EDIFileId], hl.[ControlNumberGroup], hl.[ControlNumberTransaction], hl.[HierarchicalLevelCode], hl.[HierarchicalParentIDNumber], MIN(hl.[LineNumber]) AS RangeStart
-		FROM [HPB_EDI].[dbo].[importEDI_HL] hl
+		FROM [importx12].[TagHL] hl
 			INNER JOIN @AppCodes ac
 				ON ac.[EDIFileID]=hl.[EDIFileId]
 		GROUP BY hl.[EDIFileId], hl.[ControlNumberGroup], hl.[ControlNumberTransaction], hl.[HierarchicalLevelCode], hl.[HierarchicalParentIDNumber]
@@ -73,7 +73,7 @@ BEGIN
 	insert into @POs (OrdID,PONumber,ShipToLoc ,ShipToSAN ,BillToLoc ,BillToSAN ,ShipFromLoc ,ShipFromSAN, ControlNumberGroup, ControlNumberTransaction)
 		select hdr.OrdID, hdr.PONumber,ShipToLoc, ShipToSAN, BillToLoc, BillToSAN, ShipFromLoc, ShipFromSAN, prf.ControlNumberGroup, prf.ControlNumberTransaction
 		from [850_PO_Hdr] hdr
-			inner join importEDI_PRF prf
+			inner join importx12.TagPRF prf
 				on prf.PurchaseOrderNumber = hdr.PONumber
 			inner join @AppCodes ac
 				on prf.EDIFileId = ac.EDIFileID
@@ -83,13 +83,13 @@ BEGIN
 		select LINId, EDIFileId, ControlNumberGroup,ControlNumberTransaction, psq, ps, LineNumber
 		from 
 		(select LINId, lin1.EDIFileId, LineNumber, ControlNumberGroup,ControlNumberTransaction, ProductServiceIDQualifier_01 as psq, ProductServiceID_01 as ps
-		from importEDI_LIN	 lin1
+		from importx12.[TagLIN]	 lin1
 			inner join @AppCodes ac
 				on  lin1.EDIFileID=ac.EDIFileID
 		where ProductServiceIDQualifier_01 = 'en' and ProductServiceID_01 is not null
 		union
 		select LINId, lin2.EDIFileId, LineNumber, ControlNumberGroup,ControlNumberTransaction, ProductServiceIDQualifier_02 as psq, ProductServiceID_02 as ps
-		from importEDI_LIN lin2
+		from importx12.TagLIN lin2
 			inner join @AppCodes ac
 				on  lin2.EDIFileID=ac.EDIFileID
 		where ProductServiceIDQualifier_02 = 'en' and ProductServiceID_02 is not null ) x
@@ -130,7 +130,7 @@ BEGIN
 				ON ranges.EDIFileId = ac.EDIFileID
 			INNER JOIN Vendor_SAN_Codes vsc
 				ON ac.SC=vsc.SanCode
-			INNER JOIN [HPB_EDI].dbo.[importEDI_BSN] bsn
+			INNER JOIN [importx12].[TagBSN] bsn
 				ON bsn.EDIFileId = ac.EDIFileID
 				AND bsn.[ControlNumberTransaction]=ranges.[TransactionSetControlNumber]
 					and bsn.LineNumber between ranges.RangeStart+1 and ranges.RangeEnd-1
@@ -139,7 +139,7 @@ BEGIN
 					AND hlO.EDIFileId = bsn.EDIFileId
 					AND hlO.ControlNumberTransaction = bsn.ControlNumberTransaction
 					AND hlO.ControlNumberGroup = bsn.ControlNumberGroup
-			LEFT JOIN [HPB_EDI].[dbo].[importEDI_PRF] prf
+			LEFT JOIN [importx12].[tagPRF] prf
 				ON prf.EDIFileId = bsn.EDIFileId
 					AND prf.ControlNumberTransaction = bsn.ControlNumberTransaction
 					and prf.ControlNumberGroup = bsn.ControlNumberGroup
@@ -151,20 +151,20 @@ BEGIN
 					AND hlS.EDIFileId = bsn.EDIFileId
 					AND hlS.ControlNumberTransaction = bsn.ControlNumberTransaction
 					AND hlS.ControlNumberGroup = bsn.ControlNumberGroup
-			LEFT JOIN [HPB_EDI].dbo.importEDI_TD1 td1
+			LEFT JOIN importx12.TagTD1 td1
 				on td1.EDIFileId = bsn.EDIFileId
 					and td1.ControlNumberTransaction = bsn.ControlNumberTransaction
 					and td1.ControlNumberGroup = bsn.ControlNumberGroup
-			LEFT JOIN [HPB_EDI].dbo.importEDI_TD5 td5
+			LEFT JOIN importx12.TagTD5 td5
 				on td5.EDIFileId = bsn.EDIFileId
 					and td5.ControlNumberTransaction = bsn.ControlNumberTransaction
 					and td5.ControlNumberGroup = bsn.ControlNumberGroup
-			LEFT JOIN [HPB_EDI].dbo.importEDI_DTM dtm
+			LEFT JOIN importx12.TagDTM dtm
 				on dtm.EDIFileId = bsn.EDIFileId
 					and dtm.ControlNumberTransaction = bsn.ControlNumberTransaction
 					and dtm.ControlNumberGroup = bsn.ControlNumberGroup
 					and dtm.DateTimeQualifier = '011' -- shipped
-			LEFT JOIN [HPB_EDI].dbo.importEDI_CTT ctt
+			LEFT JOIN importx12.TagCTT ctt
 				ON ctt.EDIFileId = bsn.EDIFileId
 					AND ctt.ControlNumberTransaction= bsn.ControlNumberTransaction
 					and ctt.ControlNumberGroup = bsn.ControlNumberGroup
@@ -188,7 +188,7 @@ BEGIN
 				ON ranges.EDIFileId = ac.EDIFileID
 			INNER JOIN Vendor_SAN_Codes vsc
 				ON ac.SC=vsc.SanCode
-			INNER JOIN [HPB_EDI].dbo.[importEDI_BSN] bsn
+			INNER JOIN [importx12].[TagBSN] bsn
 				ON bsn.EDIFileId = ac.EDIFileID
 				AND bsn.[ControlNumberTransaction]=ranges.[TransactionSetControlNumber]
 					and bsn.LineNumber between ranges.RangeStart+1 and ranges.RangeEnd-1
@@ -207,7 +207,7 @@ BEGIN
 							,hdr.ShipToLoc
 							,hdr.ShipToSAN
 						from @hl hlO
-							LEFT JOIN [HPB_EDI].[dbo].[importEDI_PRF] prf
+							LEFT JOIN [importx12].[TagPRF] prf
 							ON prf.EDIFileId = hlO.EDIFileId
 								AND prf.ControlNumberTransaction = hlO.ControlNumberTransaction
 								and prf.ControlNumberGroup = hlO.ControlNumberGroup
@@ -228,7 +228,7 @@ BEGIN
 								,man.MarksAndNumbersQualifier_01
 								,man.MarksAndNumbersQualifier_02
 						from @HL hlP
-							left join importEDI_MAN man
+							left join importx12.TagMAN man
 								on man.EDIFileID=hlp.EDIFileId
 									and hlP.ControlNumberGroup = man.ControlNumberGroup
 									and man.LineNumber > hlp.RangeStart 
@@ -252,7 +252,7 @@ BEGIN
 								on linI.EDIFileID =hli.EDIFileID
 									and linI.ControlNumberGroup = hlI.ControlNumberGroup
 									and linI.LineNumber > hli.RangeStart
-							left join [HPB_EDI].dbo.importEDI_SN1 sn1I
+							left join importx12.TagSN1 sn1I
 								on sn1I.EDIFileId = hli.ediFileId
 									and sn1I.ControlNumberGroup=hli.ControlNumberGroup
 									and sn1I.LineNumber > hli.RangeStart
@@ -261,11 +261,7 @@ BEGIN
 					on loop_I.EDIFileID = bsn.EDIFileId
 						and loop_i.ControlNumberGroup=bsn.ControlNumberGroup
 						and (loop_i.ControlNumberTransaction=ranges.TransactionSetControlNumber
-							and loop_i.LineNumber between ranges.RangeStart+1 and ranges.RangeEnd-1)
-
-			
-			
-									
+							and loop_i.LineNumber between ranges.RangeStart+1 and ranges.RangeEnd-1)									
 	WHERE ranges.EDIType = @EDINumber
 	order by bsn.ShipmentIdentification
 END

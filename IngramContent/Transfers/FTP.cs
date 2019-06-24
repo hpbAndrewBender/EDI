@@ -3,11 +3,14 @@ using FluentFTP;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NLog;
 
 namespace VendorIngramContent.Transfers
 {
 	public class FTP : IDisposable
 	{
+		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+
 		//public (string name, string pass) user { get; set; } = ("b20R1158", "btzi5uyyzn");
 		public List<Models.FTP.Site> ftpsite { get; set; } = new List<Models.FTP.Site>
 		{
@@ -64,6 +67,7 @@ namespace VendorIngramContent.Transfers
 			}
 			catch (Exception ex)
 			{
+				log.Error(ex);
 			}
 			return results;
 		}
@@ -97,6 +101,7 @@ namespace VendorIngramContent.Transfers
 			}
 			catch (Exception ex)
 			{
+				log.Error(ex);
 			}
 			return results;
 		}

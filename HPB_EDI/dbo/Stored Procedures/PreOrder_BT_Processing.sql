@@ -11,9 +11,9 @@ BEGIN
 -------------------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------------------------------------------
 ----Order select...................................................................................................................................
-if exists(select LogID from HPB_EDI..EDI_Process_Log where Processed=0 and TransType='ORD'
-			and OrderNumber not in (select OrderNumber from HPB_EDI..EDI_Process_Log where TransType='ORD' and processed=1)
-			and LogID in (select LogID from HPB_EDI..EDI_Transactions where ProcessorApp='BT' and SourceApp='BW_PRE'))
+if exists(select LogID from dbo.EDI_Process_Log where Processed=0 and TransType='ORD'
+			and OrderNumber not in (select OrderNumber from dbo.EDI_Process_Log where TransType='ORD' and processed=1)
+			and LogID in (select LogID from dbo.EDI_Transactions where ProcessorApp='BT' and SourceApp='BW_PRE'))
 	begin
 		declare @rVal int
 		set @rVal = 0
@@ -26,7 +26,9 @@ if exists(select LogID from HPB_EDI..EDI_Process_Log where Processed=0 and Trans
 			t.OrderLineStatus,t.LineStatusDescription,t.ShipDateStatus,t.ShipNoticeDate,t.CarrierNamdCodeType,t.CarrierNameCode,t.CustomerOrderReference,t.PackageNumber,t.PackageMarkTypeCode,t.PackageMarkValue,
 			t.ChargeTypeCode,t.ChargeTypeDescription,t.ChargeAmount,t.InsertDateTime
 		into #ords
-		from HPB_EDI..EDI_Process_Log pl inner join HPB_EDI..EDI_Transactions t on pl.LogID=t.LogID
+		from dbo.EDI_Process_Log pl 
+			inner join dbo.EDI_Transactions t 
+				on pl.LogID=t.LogID
 		where  pl.TransType in ('ORD') and t.ProcessorApp='BT' and t.SourceApp='BW_PRE' and pl.Processed=0
 		order by t.OrderNumber,t.InsertDateTime
 
@@ -47,9 +49,11 @@ if exists(select LogID from HPB_EDI..EDI_Process_Log where Processed=0 and Trans
 		if @rVal = 0 begin set @rVal = @@ERROR end
 
 		--update process log.....
-		update HPB_EDI..EDI_Process_Log
-		set Processed=1,ProcessedDateTime=getdate()
-		where Processed=0 and LogID in (select distinct LogID from #ords)
+		update dbo.EDI_Process_Log
+			set	 Processed=1
+				,ProcessedDateTime=getdate()
+		where Processed=0 
+			and LogID in (select distinct LogID from #ords)
 
 		if @rVal = 0 begin set @rVal = @@ERROR end
 
@@ -69,8 +73,8 @@ if exists(select LogID from HPB_EDI..EDI_Process_Log where Processed=0 and Trans
 -------------------------------------------------------------------------------------------------------------------------------------------------------
 ----Response inserts...................................................................................................................................
 if exists(select distinct rh.DocReferenceNumber	from BakerTaylor..bulkorder_response_Header rh inner join BakerTaylor..bulkorder_response_ItemDetail rd on rh.ResponseID=rd.ResponseID
-			where rh.DocReferenceNumber not in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='RES')
-				and rh.DocReferenceNumber in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='ORD'))
+			where rh.DocReferenceNumber not in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='RES')
+				and rh.DocReferenceNumber in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='ORD'))
 	begin
 		declare @rValRep int
 		set @rValRep = 0
@@ -81,18 +85,18 @@ if exists(select distinct rh.DocReferenceNumber	from BakerTaylor..bulkorder_resp
 		insert into @res
 		select distinct rh.DocReferenceNumber
 		from BakerTaylor..bulkorder_response_Header rh inner join BakerTaylor..bulkorder_response_ItemDetail rd on rh.ResponseID=rd.ResponseID
-		where rh.DocReferenceNumber not in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='RES')
-			and rh.DocReferenceNumber in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='ORD')
+		where rh.DocReferenceNumber not in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='RES')
+			and rh.DocReferenceNumber in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='ORD')
 
-		insert into HPB_EDI..EDI_Process_Log
+		insert into dbo.EDI_Process_Log
 		select distinct 'RES'[TransType],rh.DocReferenceNumber[OrderNumber],0[Processed],null [ProcessedDateTime]
 		from BakerTaylor..bulkorder_response_Header rh inner join BakerTaylor..bulkorder_response_ItemDetail rd on rh.ResponseID=rd.ResponseID
 			inner join @res r on r.OrderNumber=rh.DocReferenceNumber
-		where rh.DocReferenceNumber not in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='RES')
+		where rh.DocReferenceNumber not in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='RES')
 		
 		set @rValRep = @@ERROR
 		
-		insert into HPB_EDI..EDI_Transactions
+		insert into dbo.EDI_Transactions
 		select distinct pl.TransType[TransType],pl.LogID[LogID],t.ProcessorApp[ProcessorApp],t.SourceApp[SourceApp],rd.LineNumber[LineNumber],t.VendorID[VendorID],rh.DocReferenceNumber[OrderNumber],rh.OrderResponseNumber[ResponseNumber],
 			t.ASNNumber[ASNNumber],t.InvoiceNumber[InvoiceNumber],cast(rh.IssueDateTime as datetime)[IssueDateTime],rh.PurposeCode[PurposeCode],rh.CurrencyCode[CurrencyCode],rh.CountryCode[CountryCode],
 			t.FillTermsCode[FillTermsCode],''[TotalPayable],'Acknowledged'[OrderStatus],rh.BuyerPartyIDType[BuyerIDType],rh.BuyerPartyIdentifier[BuyerID],t.SourceIDType[SourceIDType],
@@ -104,16 +108,16 @@ if exists(select distinct rh.DocReferenceNumber	from BakerTaylor..bulkorder_resp
 			rd.QuantityShipping[ShippedQuantity],''[InvoiceQuantity],rd.LineStatusCode[OrderLineStatus],rd.LineStatusDescription[LineStatusDescription],''[ShipDateStatus],''[ShipNoticeDate],''[CarrierNameCodeType],
 			''[CarrierNameCode],''[CustomerOrderReference],''[PackageNumber],''[PackageMarkTypeCode],''[PackageMarkValue],''[ChargeTypeCode],''[ChargeTypeDescription],''[ChargeAmount],getdate()[InsertDateTime] 
 		from BakerTaylor..bulkorder_response_Header rh inner join BakerTaylor..bulkorder_response_ItemDetail rd on rh.ResponseID=rd.ResponseID
-			inner join HPB_EDI..EDI_Process_Log pl on rh.OrderResponseNumber=pl.OrderNumber and pl.TransType='RES' 
+			inner join dbo.EDI_Process_Log pl on rh.OrderResponseNumber=pl.OrderNumber and pl.TransType='RES' 
 			inner join @res r on r.OrderNumber=rh.DocReferenceNumber
-			inner join HPB_EDI..EDI_Transactions t on t.OrderNumber=r.OrderNumber and t.TransType='ORD'
+			inner join dbo.EDI_Transactions t on t.OrderNumber=r.OrderNumber and t.TransType='ORD'
 		where pl.Processed=0
 		
 		if @rValRep = 0 begin set @rValRep = @@ERROR end
 		
-		insert into HPB_EDI..Email_Audit_Log
+		insert into dbo.Email_Audit_Log
 		select distinct pl.TransType[EmailType],pl.LogID[LogID],0[Processed],null [ProcessedDateTime]
-		from HPB_EDI..EDI_Process_Log pl inner join @res r on r.OrderNumber=pl.OrderNumber
+		from dbo.EDI_Process_Log pl inner join @res r on r.OrderNumber=pl.OrderNumber
 		where pl.TransType='RES'
 		
 		if @rValRep = 0 begin set @rValRep = @@ERROR end
@@ -134,8 +138,8 @@ if exists(select distinct rh.DocReferenceNumber	from BakerTaylor..bulkorder_resp
 if exists(select distinct sd.BuyersOrderReference from BakerTaylor..bulkorder_shipnotice_Header sh inner join BakerTaylor..bulkorder_shipnotice_ItemDetail sd on sh.ShipID=sd.ShipID
 				inner join BakerTaylor..bulkorder_shipnotice_PackageDetail sp on sh.ShipID=sp.ShipID
 				inner join BakerTaylor..bulkorder_shipnotice_Summary ss on sh.ShipID=ss.ShipID
-			where sd.BuyersOrderReference not in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='ASN')
-				and sd.BuyersOrderReference in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='RES'))
+			where sd.BuyersOrderReference not in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='ASN')
+				and sd.BuyersOrderReference in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='RES'))
 	begin
 		declare @rValASN int
 		set @rValASN = 0
@@ -148,16 +152,16 @@ if exists(select distinct sd.BuyersOrderReference from BakerTaylor..bulkorder_sh
 		from BakerTaylor..bulkorder_shipnotice_Header sh inner join BakerTaylor..bulkorder_shipnotice_ItemDetail sd on sh.ShipID=sd.ShipID
 			inner join BakerTaylor..bulkorder_shipnotice_PackageDetail sp on sh.ShipID=sp.ShipID
 			inner join BakerTaylor..bulkorder_shipnotice_Summary ss on sh.ShipID=ss.ShipID
-		where sd.BuyersOrderReference not in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='ASN')
-			and sd.BuyersOrderReference in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='RES')
+		where sd.BuyersOrderReference not in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='ASN')
+			and sd.BuyersOrderReference in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='RES')
 		
-		insert into HPB_EDI..EDI_Process_Log
+		insert into dbo.EDI_Process_Log
 		select distinct 'ASN'[TransType],sd.BuyersOrderReference[OrderNumber],0[Processed],null [ProcessedDateTime]
 		from  BakerTaylor..bulkorder_shipnotice_Header sh inner join BakerTaylor..bulkorder_shipnotice_ItemDetail sd on sh.ShipID=sd.ShipID
 			inner join BakerTaylor..bulkorder_shipnotice_PackageDetail sp on sh.ShipID=sp.ShipID
 			inner join BakerTaylor..bulkorder_shipnotice_Summary ss on sh.ShipID=ss.ShipID
 			inner join @asn a on a.OrderNumber=sd.BuyersOrderReference
-		where sd.BuyersOrderReference not in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='ASN')
+		where sd.BuyersOrderReference not in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='ASN')
 		
 		set @rValASN = @@ERROR
 		
@@ -177,7 +181,7 @@ if exists(select distinct sd.BuyersOrderReference from BakerTaylor..bulkorder_sh
 		
 		set @rValASN = @@ERROR
 		
-		insert into HPB_EDI..EDI_Transactions
+		insert into dbo.EDI_Transactions
 		select distinct pl.TransType[TransType],pl.LogID[LogID],t.ProcessorApp[ProcessorApp],t.SourceApp[SourceApp],sd.LineNumber[LineNumber],t.VendorID[VendorID],sd.BuyersOrderReference[OrderNumber],''[ResponseNumber],
 			sh.ASNNumber[ASNNumber],t.InvoiceNumber[InvoiceNumber],cast(sh.IssueDateTime as datetime)[IssueDateTime],sh.PurposeCode[PurposeCode],sh.CurrencyCode[CurrencyCode],sh.CountryCode[CountryCode],
 			t.FillTermsCode[FillTermsCode],''[TotalPayable],'Shipped'[OrderStatus],sh.BuyerPartyIDType[BuyerIDType],sh.BuyerPartyIdentifier[BuyerID],t.SourceIDType[SourceIDType],
@@ -191,17 +195,17 @@ if exists(select distinct sd.BuyersOrderReference from BakerTaylor..bulkorder_sh
 		from BakerTaylor..bulkorder_shipnotice_Header sh inner join BakerTaylor..bulkorder_shipnotice_ItemDetail sd on sh.ShipID=sd.ShipID
 			inner join #pkgDtl sp on sh.ShipID=sp.ShipID  
 			inner join BakerTaylor..bulkorder_shipnotice_Summary ss on sh.ShipID=ss.ShipID
-			inner join HPB_EDI..EDI_Process_Log pl on sd.BuyersOrderReference=pl.OrderNumber and pl.TransType='ASN'
+			inner join dbo.EDI_Process_Log pl on sd.BuyersOrderReference=pl.OrderNumber and pl.TransType='ASN'
 			inner join @asn a on a.OrderNumber=sd.BuyersOrderReference
-			inner join HPB_EDI..EDI_Transactions t on t.OrderNumber=sd.BuyersOrderReference and t.TransType='RES'
+			inner join dbo.EDI_Transactions t on t.OrderNumber=sd.BuyersOrderReference and t.TransType='RES'
 		where pl.Processed=0
 		
 		if @rValASN = 0 begin set @rValASN = @@ERROR end
 		drop table #pkgDtl
 		
-		insert into HPB_EDI..Email_Audit_Log
+		insert into dbo.Email_Audit_Log
 		select distinct pl.TransType[EmailType],pl.LogID[LogID],0[Processed],null [ProcessedDateTime]
-		from HPB_EDI..EDI_Process_Log pl inner join @asn a on a.OrderNumber=pl.OrderNumber
+		from dbo.EDI_Process_Log pl inner join @asn a on a.OrderNumber=pl.OrderNumber
 		where pl.TransType='ASN'
 		
 		if @rValASN = 0 begin set @rValASN = @@ERROR end
@@ -221,8 +225,8 @@ if exists(select distinct sd.BuyersOrderReference from BakerTaylor..bulkorder_sh
 ----Invoice inserts...................................................................................................................................
 if exists(select distinct id.BuyersOrderReference from BakerTaylor..bulkorder_invoice_Header ih inner join BakerTaylor..bulkorder_invoice_ItemDetail id on ih.InvoiceID=id.InvoiceID
 				left outer join BakerTaylor..bulkorder_invoice_AdditionalCharges ic on ih.InvoiceID=ic.InvoiceID
-			where id.BuyersOrderReference not in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='INV')
-				and id.BuyersOrderReference in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='ASN'))
+			where id.BuyersOrderReference not in (select distinct OrderNumber from Dbo.EDI_Process_Log where TransType='INV')
+				and id.BuyersOrderReference in (select distinct OrderNumber from Dfbo.EDI_Process_Log where TransType='ASN'))
 	begin
 		declare @rValInv int
 		set @rValInv = 0
@@ -234,19 +238,19 @@ if exists(select distinct id.BuyersOrderReference from BakerTaylor..bulkorder_in
 		select distinct id.BuyersOrderReference 
 		from BakerTaylor..bulkorder_invoice_Header ih inner join BakerTaylor..bulkorder_invoice_ItemDetail id on ih.InvoiceID=id.InvoiceID
 			left outer join BakerTaylor..bulkorder_invoice_AdditionalCharges ic on ih.InvoiceID=ic.InvoiceID
-		where id.BuyersOrderReference  not in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='INV')
-			and id.BuyersOrderReference  in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='ASN')
+		where id.BuyersOrderReference  not in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='INV')
+			and id.BuyersOrderReference  in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='ASN')
 
-		insert into HPB_EDI..EDI_Process_Log
+		insert into dbo.EDI_Process_Log
 		select distinct 'INV'[TransType],id.BuyersOrderReference[OrderNumber],0[Processed],null [ProcessedDateTime]
 		from  BakerTaylor..bulkorder_invoice_Header ih inner join BakerTaylor..bulkorder_invoice_ItemDetail id on ih.InvoiceID=id.InvoiceID
 			left outer join BakerTaylor..bulkorder_invoice_AdditionalCharges ic on ih.InvoiceID=ic.InvoiceID
 			inner join @inv i on i.OrderNumber=id.BuyersOrderReference 
-		where id.BuyersOrderReference  not in (select distinct OrderNumber from HPB_EDI..EDI_Process_Log where TransType='INV')
+		where id.BuyersOrderReference  not in (select distinct OrderNumber from dbo.EDI_Process_Log where TransType='INV')
 
 		set @rValInv = @@ERROR
 		
-		insert into HPB_EDI..EDI_Transactions
+		insert into dbo.EDI_Transactions
 		select distinct pl.TransType[TransType],pl.LogID[LogID],t.ProcessorApp[ProcessorApp],t.SourceApp[SourceApp],id.LineNumber[LineNumber],t.VendorID[VendorID],id.BuyersOrderReference[OrderNumber],''[ResponseNumber],
 			ih.ASNRefNumber[ASNNumber],ih.InvoiceNumber[InvoiceNumber],cast(ih.IssueDateTime as datetime)[IssueDateTime],ih.PurposeCode[PurposeCode],ih.CurrencyCode[CurrencyCode],ih.CountryCode[CountryCode],
 			t.FillTermsCode[FillTermsCode],ih.TotalPayable[TotalPayable],'Invoiced'[OrderStatus],ih.BuyerPartyIDType[BuyerIDType],ih.BuyerPartyIdentifier[BuyerID],t.SourceIDType[SourceIDType],
@@ -259,8 +263,8 @@ if exists(select distinct id.BuyersOrderReference from BakerTaylor..bulkorder_in
 			t.CarrierNameCode[CarrierNameCode],id.BuyersOrderReference[CustomerOrderReference],''[PackageNumber],''[PackageMarkTypeCode],''[PackageMarkValue],'Other'[ChargeTypeCode],BakerTaylor.dbo.BT_INV_Charge_Consol(ih.InvoiceID)[ChargeTypeDescription],sum(cast(ic.ChargeAmountExcludingTax as money))[ChargeAmount],getdate()[InsertDateTime] 
 		from BakerTaylor..bulkorder_invoice_Header ih inner join BakerTaylor..bulkorder_invoice_ItemDetail id on ih.InvoiceID=id.InvoiceID
 			left outer join BakerTaylor..bulkorder_invoice_AdditionalCharges ic on ih.InvoiceID=ic.InvoiceID
-			inner join HPB_EDI..EDI_Process_Log pl on id.BuyersOrderReference=pl.OrderNumber and pl.TransType='INV'
-			inner join HPB_EDI..EDI_Transactions t on t.OrderNumber=id.BuyersOrderReference and t.TransType='ASN'
+			inner join dbo.EDI_Process_Log pl on id.BuyersOrderReference=pl.OrderNumber and pl.TransType='INV'
+			inner join dbo.EDI_Transactions t on t.OrderNumber=id.BuyersOrderReference and t.TransType='ASN'
 			inner join @inv i on i.OrderNumber=id.BuyersOrderReference
 		where pl.Processed=0
 		group by pl.TransType,pl.LogID,t.ProcessorApp,t.SourceApp,id.LineNumber,t.VendorID,id.BuyersOrderReference,ih.ASNRefNumber,ih.InvoiceNumber,ih.IssueDateTime,ih.PurposeCode,ih.CurrencyCode,ih.CountryCode,
@@ -271,9 +275,9 @@ if exists(select distinct id.BuyersOrderReference from BakerTaylor..bulkorder_in
 		
 		if @rValInv = 0 begin set @rValInv = @@ERROR end
 
-		insert into HPB_EDI..Email_Audit_Log
+		insert into dbo.Email_Audit_Log
 		select distinct pl.TransType[EmailType],pl.LogID[LogID],0[Processed],null [ProcessedDateTime]
-		from HPB_EDI..EDI_Process_Log pl inner join @inv i on i.OrderNumber=pl.OrderNumber
+		from dbo.EDI_Process_Log pl inner join @inv i on i.OrderNumber=pl.OrderNumber
 		where pl.TransType='INV'
 		
 		if @rValInv = 0 begin set @rValInv = @@ERROR end

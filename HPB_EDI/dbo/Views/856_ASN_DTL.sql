@@ -1,4 +1,5 @@
-﻿	CREATE VIEW DBO.[856_ASN_DTL]
+﻿
+	CREATE VIEW [dbo].[856_ASN_DTL]
 			AS
 				SELECT	 [ShipmentItemID] AS [ItemShipID]
 						,[ShipmentID] AS [ShipID]
@@ -9,4 +10,4 @@
 						,[QuantityShipped] AS [ShipQty]
 						,CAST([PackageNo] AS NVARCHAR(30)) AS [PackageNo]
 						,CAST([TrackingNo] AS NVARCHAR(30)) AS [TrackingNo]
-				FROM EDI.ShipmentDetail
+				FROM BLK.ShipmentDetail

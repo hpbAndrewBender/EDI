@@ -3,7 +3,7 @@
 -- Create date: <8/25/2017>
 -- Description:	<Send Missing BT CDF response Email.....>
 -- =============================================
-create PROCEDURE [dbo].[CDF_BT_CheckMissingResponses]
+CREATE PROCEDURE [dbo].[CDF_BT_CheckMissingResponses]
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -14,9 +14,10 @@ BEGIN
 	--------.........
 
 	if exists (select oh.OrderNumber,oh.IssueDateTime,oh.ShipToName 
-				from BakerTaylor..order_Header oh with(nolock)
-				where oh.OrderNumber not like '%test%' and oh.OrderNumber in (select BuyersOrderReference from BakerTaylor..order_shipnotice_ItemDetail with(nolock) where BuyersOrderReference=oh.OrderNumber)
-					and oh.OrderNumber not in (select OrderResponseNumber from BakerTaylor..order_response_Header with(nolock) where OrderResponseNumber=oh.OrderNumber))
+				from BakerTaylor.dbo.order_Header oh with(nolock)
+				where oh.OrderNumber not like '%test%' 
+				and oh.OrderNumber in (select BuyersOrderReference from BakerTaylor.dbo.order_shipnotice_ItemDetail with(nolock) where BuyersOrderReference=oh.OrderNumber)
+					and oh.OrderNumber not in (select OrderResponseNumber from BakerTaylor.dbo.order_response_Header with(nolock) where OrderResponseNumber=oh.OrderNumber))
 		begin
 			--select oh.OrderNumber,oh.IssueDateTime,oh.ShipToName 
 			--from BakerTaylor..order_Header oh

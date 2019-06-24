@@ -29,7 +29,7 @@ namespace FormatBBV3.Logic.Data.PurchaseAcknowledgement
 			int batchnumber = 0;
 			try
 			{
-				batchnumber = CommonLib.Logic.Globals.CreateBatch(filename, vendor, 1);
+				batchnumber = CommonLib.Logic.Globals.CreateBatch("BBV3", filename, vendor, 1);
 			}
 			catch (Exception ex)
 			{
@@ -117,6 +117,7 @@ namespace FormatBBV3.Logic.Data.PurchaseAcknowledgement
 			//
 			string typename = string.Empty;
 			int acknowledgementCount = 0;
+			bool savedokay = false;
 
 			try
 			{
@@ -236,21 +237,7 @@ namespace FormatBBV3.Logic.Data.PurchaseAcknowledgement
 								break;
 						}
 					}
-					using (SQL sql = new SQL())
-					{
-						// add batch info
-						sql.SaveR02_FileHeader(r02, batchnumber);
-						sql.SaveR11_PurchaseOrderHeader(r11, batchnumber);
-						sql.SaveR21_FreeFormVendor(r21, batchnumber);
-						sql.SaveR40_LineItem(r40, batchnumber);
-						sql.SaveR41_AdditionalDetail(r41, batchnumber);
-						sql.SaveR42_AdditionalLineItem(r42, batchnumber);
-						sql.SaveR43_AdditionalLineItem(r43, batchnumber);
-						sql.SaveR44_ItemNumberOrPrice(r44, batchnumber);
-						sql.SaveR45_AdditionalLineItem(r45, batchnumber);
-						sql.SaveR59_PurchaseOrderControlTotals(r59, batchnumber);
-						sql.SaveR91_FileTrailer(r91, batchnumber);
-					}
+					using (SQL sql = new SQL(batchnumber, r02, r11, r21, r40, r41, r42, r43, r44, r45, r59, r91)) { savedokay = sql.Successful; } 
 				}
 			}
 			catch (Exception ex)

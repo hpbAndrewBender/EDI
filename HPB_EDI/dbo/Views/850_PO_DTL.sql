@@ -1,4 +1,5 @@
-﻿				CREATE VIEW DBO.[850_PO_DTL]
+﻿
+				CREATE VIEW [dbo].[850_PO_DTL]
 			AS
 				SELECT	 [OrderItemId] AS [ItemOrdID]
 						,[OrderId] AS [OrdID]
@@ -12,4 +13,4 @@
 						,CAST([ItemFillTerms] AS NVARCHAR(30)) AS [ItemFillTerms]
 						,CAST([XActionCode] AS NVARCHAR(10)) AS [XActionCode]
 						,CAST([FillAmount] AS NVARCHAR(10)) AS [FillAmount]
-				FROM EDI.PurchaseOrderDetail
+				FROM BLK.PurchaseOrderDetail

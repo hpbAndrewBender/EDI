@@ -23,9 +23,9 @@ BEGIN
 		FROM (	SELECT DISTINCT [EDIFileId]
 				FROM  [HPB_EDI].[dbo].[vuImportEDI_Unprocessed_TransactionRanges]
 				WHERE [EDIType] = @EDINumber) ranges
-			INNER JOIN [HPB_EDI].[dbo].[importEDI_ISA] isa
+			INNER JOIN [importX12].[TagISA] isa
 				ON isa.[EDIFileId]=ranges.[EDIFileId]
-			INNER JOIN [HPB_EDI].[dbo].[importEDI_GS] gs
+			INNER JOIN [importX12].[TagGS] gs
 				ON gs.[EDIFileId]=ranges.[EDIFileId]
 
 	INSERT INTO [HPB_EDI].[dbo].[temp_810_Inv_Hdr] ([InvoiceNo],[IssueDate],[VendorID],[PONumber],[ReferenceNo],[ShipToLoc],[ShipToSAN],[BillToLoc],[BillToSAN],[ShipFromLoc],[ShipFromSAN],[TotalLines]
@@ -57,12 +57,12 @@ BEGIN
 				ON ranges.[EDIFileId]= ac.[EDIFileID]
 			INNER JOIN [HPB_EDI].[dbo].[Vendor_SAN_Codes] vsc
 				ON ac.[SC]=vsc.[SANCode]
-			INNER JOIN [HPB_EDI].[dbo].[importEDI_BIG] big
+			INNER JOIN [importX12].[TagBIG] big
 				ON ranges.[EDIFileId]=big.[EDIFileId]
 					AND big.[ControlNumberTransaction]=ranges.[TransactionSetControlNumber]
 			INNER JOIN [HPB_EDI].[dbo].[850_PO_Hdr] hdr
 				ON hdr.[PONumber]= big.[PurchaseOrderNumber]
-			LEFT JOIN [HPB_EDI].[dbo].[importEDI_CUR] cur
+			LEFT JOIN [importX12].[TagCUR] cur
 				ON cur.EDIFileId = big.EDIFileId
 					AND cur.ControlNumberGroup = big.ControlNumberGroup
 					AND cur.ControlNumberTransaction = big.ControlNumberTransaction
@@ -70,7 +70,7 @@ BEGIN
 						AND cur.LineNumber BETWEEN ranges.RangeStart+1 AND ranges.RangeEnd-1
 						AND cur.LineNumber > big.LineNumber
 						AND cur.LineNumber - big.LineNumber = 1)
-			LEFT JOIN [HPB_EDI].[dbo].[importEDI_N1] n1
+			LEFT JOIN [importX12].[TagN1] n1
 				ON n1.EDIFileId = big.EDIFileId
 					AND n1.ControlNumberGroup = big.ControlNumberGroup
 					AND n1.ControlNumberTransaction = big.ControlNumberTransaction
@@ -78,7 +78,7 @@ BEGIN
 						AND n1.LineNumber BETWEEN ranges.RangeStart+1 AND ranges.RangeEnd-1
 						AND n1.LineNumber > COALESCE(cur.LineNumber, big.LineNumber)
 						AND n1.LineNumber - COALESCE(cur.LineNumber, big.LineNumber) BETWEEN 1 AND 2)		
-			LEFT JOIN [HPB_EDI].[dbo].[importEDI_TDS] tds
+			LEFT JOIN [importX12].[TagTDS] tds
 				ON tds.EDIFileId = big.EDIFileId
 					AND tds.ControlNumberGroup = big.ControlNumberGroup
 					AND tds.ControlNumberTransaction = big.ControlNumberTransaction
@@ -86,7 +86,7 @@ BEGIN
 						AND tds.LineNumber BETWEEN ranges.RangeStart+1 AND ranges.RangeEnd-1
 						AND tds.LineNumber > COALESCE(n1.LineNumber, big.LineNumber))
 						--AND tds.LineNumber - COALESCE(n1.LineNumber, big.LineNumber) <=2)
-			LEFT JOIN [HPB_EDI].[dbo].[importEDI_CTT] ctt
+			LEFT JOIN [importX12].[TagCTT] ctt
 				ON ctt.[EDIFileId]=big.[EDIFileId]
 					AND ctt.[ControlNumberGroup]=big.[ControlNumberGroup]
 					AND ctt.[ControlNumberTransaction]=big.[ControlNumberTransaction]
@@ -112,7 +112,7 @@ BEGIN
 		FROM [HPB_EDI].[dbo].[vuImportEDI_Unprocessed_TransactionRanges] ranges
 			INNER JOIN @AppCodes ac
 				ON ac.[EDIFileID]=ranges.[EDIFileId]
-			INNER JOIN [HPB_EDI].[dbo].[importEDI_BIG] big
+			INNER JOIN[importX12].[TagBIG] big
 				ON big.[EDIFileId]=ranges.[EDIFileId]
 					AND big.[ControlNumberTransaction]=ranges.[TransactionSetControlNumber]
 			INNER JOIN @Inserted ii
@@ -122,7 +122,7 @@ BEGIN
 				ON vsc.[SANCode]=ac.[SC]
 			INNER JOIN [HPB_EDI].[dbo].[850_PO_Hdr] hdr
 				ON hdr.[PONumber]=big.[PurchaseOrderNumber]
-			LEFT JOIN [importEDI_CUR] cur
+			LEFT JOIN [importX12].[TagCUR] cur
 				ON cur.EDIFileId = big.EDIFileId
 					AND cur.ControlNumberGroup = big.ControlNumberGroup
 					AND cur.ControlNumberTransaction = big.ControlNumberTransaction
@@ -130,7 +130,7 @@ BEGIN
 						AND cur.LineNumber BETWEEN ranges.RangeStart+1 AND ranges.RangeEnd-1
 						AND cur.LineNumber > big.LineNumber
 						AND cur.LineNumber - big.LineNumber = 1)
-			LEFT JOIN [importEDI_N1] n1
+			LEFT JOIN [importX12].[TagN1] n1
 				ON n1.EDIFileId = big.EDIFileId
 					AND n1.ControlNumberGroup = big.ControlNumberGroup
 					AND n1.ControlNumberTransaction = big.ControlNumberTransaction
@@ -138,7 +138,7 @@ BEGIN
 						AND n1.LineNumber BETWEEN ranges.RangeStart+1 AND ranges.RangeEnd-1
 						AND n1.LineNumber > COALESCE(cur.LineNumber, big.LineNumber)
 						AND n1.LineNumber - COALESCE(cur.LineNumber, big.LineNumber) <= 2)			
-			LEFT JOIN [importEDI_ITD] itd
+			LEFT JOIN [importX12].[TagITD] itd
 				ON itd.EDIFileId = big.EDIFileId
 					AND itd.ControlNumberGroup = big.ControlNumberGroup
 					AND itd.ControlNumberTransaction = big.ControlNumberTransaction
@@ -146,7 +146,7 @@ BEGIN
 						AND itd.LineNumber BETWEEN ranges.RangeStart+1 AND ranges.RangeEnd-1
 						AND itd.LineNumber > COALESCE(n1.LineNumber, cur.LineNumber)
 						AND itd.LineNumber - COALESCE(n1.LineNumber, cur.LineNumber) < 2)
-			LEFT JOIN [importEDI_DTM] dtm
+			LEFT JOIN [importX12].[TagDTM] dtm
 				ON itd.EDIFileId = big.EDIFileId
 					AND dtm.ControlNumberGroup = big.ControlNumberGroup
 					AND dtm.ControlNumberTransaction = big.ControlNumberTransaction
@@ -154,7 +154,7 @@ BEGIN
 						AND dtm.LineNumber BETWEEN ranges.RangeStart+1 AND ranges.RangeEnd-1
 						AND dtm.LineNumber > COALESCE(itd.LineNumber, n1.LineNumber)
 						AND dtm.LineNumber - COALESCE(itd.LineNumber, n1.LineNumber) < 2)
-			LEFT JOIN [HPB_EDI].[dbo].[importEDI_IT1] it1
+			LEFT JOIN [importX12].[TagIT1] it1
 				ON it1.EDIFileId = big.EDIFileId
 					AND it1.ControlNumberGroup = big.ControlNumberGroup
 					AND it1.ControlNumberTransaction = big.ControlNumberTransaction
@@ -162,7 +162,7 @@ BEGIN
 						AND it1.LineNumber BETWEEN ranges.RangeStart+1 AND ranges.RangeEnd-1
 						AND it1.LineNumber > big.LineNumber
 						AND it1.LineNumber - big.LineNumber >=1)
-			LEFT JOIN [HPB_EDI].[dbo].[importEDI_CTP] ctp
+			LEFT JOIN [importX12].[TagCTP] ctp
 				ON it1.EDIFileId = big.EDIFileId
 					AND ctp.ControlNumberGroup = big.ControlNumberGroup
 					AND ctp.ControlNumberTransaction = big.ControlNumberTransaction

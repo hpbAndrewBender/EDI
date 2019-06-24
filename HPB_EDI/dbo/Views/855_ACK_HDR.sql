@@ -1,4 +1,5 @@
-﻿		CREATE VIEW dbo.[855_ACK_HDR]
+﻿
+		CREATE VIEW [dbo].[855_ACK_HDR]
 		AS
 			SELECT	 [AckId]
 					,CAST([PONumber] AS CHAR(6)) AS [PONumber]
@@ -20,4 +21,4 @@
 					,[ResponseACKSent]
 					,CAST([ResponseAckNo] AS NVARCHAR(10)) AS [ResponseAckNo]
 					,CAST([GSNo] AS NVARCHAR(10)) AS [GSNo]
-			FROM EDI.AcknowledgeHeader
+			FROM BLK.AcknowledgeHeader

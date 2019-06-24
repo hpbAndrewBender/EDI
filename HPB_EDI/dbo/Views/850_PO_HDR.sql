@@ -1,4 +1,5 @@
-﻿CREATE VIEW dbo.[850_PO_HDR]
+﻿
+CREATE VIEW [dbo].[850_PO_HDR]
 		AS
 			SELECT	 [OrderId] AS [OrdID]
 					,CAST([PONumber] AS CHAR(6)) AS [PONumber]
@@ -15,4 +16,4 @@
 					,[InsertDateTime]
 					,[Processed]
 					,[ProcessedDateTime]
-			FROM EDI.PurchaseOrderHeader
+			FROM BLK.PurchaseOrderHeader

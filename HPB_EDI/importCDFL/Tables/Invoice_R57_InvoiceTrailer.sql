@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [importCDFL].[Invoice_R57_InvoiceTrailer] (
     [Id]             INT            IDENTITY (1, 1) NOT NULL,
+    [BatchId]        INT            NULL,
     [InvoiceTrailer] VARCHAR (2)    NOT NULL,
     [RecordSequence] SMALLINT       NOT NULL,
     [InvoiceNumber]  VARCHAR (8)    NOT NULL,
@@ -10,6 +11,8 @@
     [TotalInvoice]   DECIMAL (9, 2) NOT NULL,
     CONSTRAINT [PK_Invoice_R57_InvoiceTrailer] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

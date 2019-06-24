@@ -17,12 +17,19 @@ set @err=0
 			
 ----get orders pending consolidation for stores.......................................................
 	create table #asnTmp (rowid int identity(1,1), ordNo varchar(20), locNo char(5),PoNo char(6))
+
 	insert into #asnTmp
-	select t.OrderNumber,san.LocationNo,CAST('' as CHAR(6))
-	from HPB_EDI..EDI_Process_Log pl inner join HPB_EDI..EDI_Transactions t on pl.LogID=t.LogID
-		inner join BakerTaylor..codes_SAN san on t.SellerID=san.SAN+san.Suffix
-	where pl.Processed=0 and t.TransType='ASN' and t.SourceApp='BW_PRE' and ltrim(rtrim(t.Message))=''
-	order by san.LocationNo,t.OrderNumber
+		select t.OrderNumber,san.LocationNo,CAST('' as CHAR(6))
+		from dbo.EDI_Process_Log pl 
+			inner join dbo.EDI_Transactions t 
+				on pl.LogID=t.LogID
+			inner join BakerTaylor.dbo.codes_SAN san 
+				on t.SellerID=san.SAN+san.Suffix
+		where pl.Processed=0 
+			and t.TransType='ASN' 
+			and t.SourceApp='BW_PRE' 
+			and ltrim(rtrim(t.Message))=''
+		order by san.LocationNo,t.OrderNumber
 
 ----loop through each location and get a new PO......................................................
 	declare @sRetPO char(6)
@@ -63,7 +70,7 @@ set @err=0
 						----update transaction table with PO number.....................................
 						update t
 						set t.Message=a.PoNo
-						from HPB_EDI..EDI_Transactions t inner join #asnTmp a on t.OrderNumber=a.ordNo
+						from EDI_Transactions t inner join #asnTmp a on t.OrderNumber=a.ordNo
 						where t.OrderNumber=@updOrd and t.TransType='ASN' and t.SourceApp='BW_PRE'
 					
 						if @err=0 begin set @err=@@ERROR end
@@ -75,13 +82,22 @@ set @err=0
 			create table #drpTmp (rowid int identity(1,1),PoNo char(6),ordNo varchar(20),locNo char(5),storeNo char(5),lineNum varchar(10),itemcode varchar(20),shipQty int,cost money)
 			insert into #drpTmp (PoNo,ordNo,locNo,storeNo,lineNum,itemcode,shipQty,cost)
 			select t.Message[PoNumber],t.OrderNumber,'00944',a.locNo,t.LineNumber,right(p.ItemCode,8),t.ShippedQuantity,p.Cost
-			from HPB_EDI..EDI_Process_Log pl inner join HPB_EDI..EDI_Transactions t on pl.LogID=t.LogID
-				inner join #asnTmp a on t.OrderNumber=a.ordNo
-				left outer join (select distinct po.ItemCode,pm.ISBN,pmd.UPC,pm.Cost from HPB_Prime..ProductMaster pm 
-								inner join HPB_Prime..ProductMasterDist pmd on pm.ItemCode=pmd.ItemCode
-								inner join HPB_Prime..ProductPreOrder po on pm.ItemCode=po.ItemCode) p
+			from dbo.EDI_Process_Log pl 
+				inner join dbo.EDI_Transactions t 
+					on pl.LogID=t.LogID
+				inner join #asnTmp a 
+					on t.OrderNumber=a.ordNo
+				left outer join (	select distinct po.ItemCode,pm.ISBN,pmd.UPC,pm.Cost 
+									from HPB_Prime.dbo.ProductMaster pm 
+									inner join HPB_Prime.dbo.ProductMasterDist pmd 
+										on pm.ItemCode=pmd.ItemCode
+									inner join HPB_Prime.dbo.ProductPreOrder po 
+										on pm.ItemCode=po.ItemCode
+								) p
 					on t.ProductID=case when t.ProductIDType='UPC' then p.UPC else p.ISBN end
-			where pl.Processed=0 and t.TransType='ASN' and t.SourceApp='BW_PRE'
+			where pl.Processed=0 
+				and t.TransType='ASN' 
+				and t.SourceApp='BW_PRE'
 
 			if @err=0 begin set @err=@@ERROR end
 			

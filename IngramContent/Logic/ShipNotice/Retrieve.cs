@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Model = DataHPBEDI.Models.BLK;
+using Direct = DataHPBEDI.Models.CDF;
 
 namespace VendorIngramContent.Logic.ShipNotice
 {
@@ -9,13 +11,13 @@ namespace VendorIngramContent.Logic.ShipNotice
 	{
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
-		public List<(DataHPBEDI.Models.EDI.Shipment.Header header, List<DataHPBEDI.Models.EDI.Shipment.Detail> details)> BBV3(string fullpathandname, string vendor)
+		public List<(Model.Shipment.Header header, List<Model.Shipment.Detail> details)> BBV3(string fullpathandname, string vendor)
 		{
-			DataHPBEDI.Models.EDI.Shipment.Header header = null;
-			List<DataHPBEDI.Models.EDI.Shipment.Detail> details = new List<DataHPBEDI.Models.EDI.Shipment.Detail>();
-			DataHPBEDI.Models.EDI.Shipment.Detail detail = null;
+			Model.Shipment.Header header = null;
+			List<Model.Shipment.Detail> details = new List<Model.Shipment.Detail>();
+			Model.Shipment.Detail detail = null;
 			FormatBBV3.Models.Files.ShipNotice.DataSequence.V3 shpBBV3 = new FormatBBV3.Models.Files.ShipNotice.DataSequence.V3();
-			List<(DataHPBEDI.Models.EDI.Shipment.Header header, List<DataHPBEDI.Models.EDI.Shipment.Detail> details)> shipments = new List<(DataHPBEDI.Models.EDI.Shipment.Header header, List<DataHPBEDI.Models.EDI.Shipment.Detail> details)>();
+			List<(Model.Shipment.Header header, List<Model.Shipment.Detail> details)> shipments = new List<(Model.Shipment.Header header, List<Model.Shipment.Detail> details)>();
 			List<(string po , string reference, int quant)> quantity = new List<(string, string, int)>();
 
 			try
@@ -30,8 +32,8 @@ namespace VendorIngramContent.Logic.ShipNotice
 							 select ship.ShipmentRecord.PONumber).Distinct().ToList();
 				for (int shipcounter = 0; shipcounter < shipPOs.Count; shipcounter++)
 				{
-					details = new List<DataHPBEDI.Models.EDI.Shipment.Detail>();
-					header = new DataHPBEDI.Models.EDI.Shipment.Header
+					details = new List<Model.Shipment.Detail>();
+					header = new Model.Shipment.Header
 					{
 						// ShipmentID = ,
 						ASNAckNo = string.Empty,
@@ -59,7 +61,7 @@ namespace VendorIngramContent.Logic.ShipNotice
 					FormatBBV3.Models.Files.ShipNotice.OR_ASNShipment shipmentrecord = (from f in items where f.ShipmentRecord.PONumber == shipPOs[shipcounter] select f.ShipmentRecord).FirstOrDefault();
 					foreach(FormatBBV3.Models.Files.ShipNotice.OD_ASNShipmentDetail singleitem in items[shipcounter].LineItemDetailRecords)
 					{
-						detail = new DataHPBEDI.Models.EDI.Shipment.Detail
+						detail = new Model.Shipment.Detail
 						{
 							// ShipmentID = ,
 							// ShipmentItemID = ,
@@ -149,13 +151,13 @@ namespace VendorIngramContent.Logic.ShipNotice
 			return shipments;
 		}
 
-		public List<(DataHPBEDI.Models.EDI.Shipment.Header header, List<DataHPBEDI.Models.EDI.Shipment.Detail> details)> CDFL(string fullpathandname, string vendor)
+		public List<(Direct.Shipment.Header header, List<Direct.Shipment.Detail> details)> CDFL(string fullpathandname, string vendor)
 		{
-			DataHPBEDI.Models.EDI.Shipment.Header header = null;
-			List<DataHPBEDI.Models.EDI.Shipment.Detail> details = new List<DataHPBEDI.Models.EDI.Shipment.Detail>();
-			DataHPBEDI.Models.EDI.Shipment.Detail detail = null;
+			Direct.Shipment.Header header = null;
+			List<Direct.Shipment.Detail> details = new List<Direct.Shipment.Detail>();
+			Direct.Shipment.Detail detail = null;
 			FormatCDFL.Models.Files.ShipNotice.DataSequence.V3 shpCDFL = new FormatCDFL.Models.Files.ShipNotice.DataSequence.V3();
-			List<(DataHPBEDI.Models.EDI.Shipment.Header header, List<DataHPBEDI.Models.EDI.Shipment.Detail> details)> shipments = new List<(DataHPBEDI.Models.EDI.Shipment.Header header, List<DataHPBEDI.Models.EDI.Shipment.Detail> details)>();
+			List<(Direct.Shipment.Header header, List<Direct.Shipment.Detail> details)> shipments = new List<(Direct.Shipment.Header header, List<Direct.Shipment.Detail> details)>();
 			List<(string po, string reference, int quant)> quantity = new List<(string, string, int)>();
 
 			try
@@ -170,8 +172,8 @@ namespace VendorIngramContent.Logic.ShipNotice
 				//?? 			   select ship.ShipmentRecord.PONumber).Distinct().ToList();
 				//??for (int shipcounter = 0; shipcounter < shipPOs.Count(); shipcounter++)
 				//??{
-				//??	details = new List<DataHPBEDI.Models.EDI.Shipment.Detail>();
-				//??	header = new DataHPBEDI.Models.EDI.Shipment.Header
+				//??	details = new List<Model.Shipment.Detail>();
+				//??	header = new Model.Shipment.Header
 				//??	{
 				//??		// ShipmentID = ,
 				//??		ASNAckNo = string.Empty,
@@ -199,7 +201,7 @@ namespace VendorIngramContent.Logic.ShipNotice
 				//??	//?? FormatCDFL.Models.Files.ShipNotice.OR_ASNShipment shipmentrecord = (from f in items where f.ShipmentRecord.PONumber == shipPOs[shipcounter] select f.ShipmentRecord).FirstOrDefault();
 				//??	//?? foreach (FormatCDFL.Models.Files.ShipNotice.OD_ASNShipmentDetail singleitem in items[shipcounter].LineItemDetailRecords)
 				//??	//?? {
-				//??	//?? 	detail = new DataHPBEDI.Models.EDI.Shipment.Detail
+				//??	//?? 	detail = new Model.Shipment.Detail
 				//??	//?? 	{
 				//??	//?? 		// ShipmentID = ,
 				//??	//?? 		// ShipmentItemID = ,

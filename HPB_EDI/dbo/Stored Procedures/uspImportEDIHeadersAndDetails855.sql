@@ -23,9 +23,9 @@ BEGIN
 		from (	SELECT DISTINCT EDIFileId
 				FROM  vuImportEDI_Unprocessed_TransactionRanges
 				WHERE EDIType = @EDINumber) ranges
-			INNER JOIN importEDI_ISA isa
+			INNER JOIN importx12.TagISA isa
 				ON isa.EDIFileId = ranges.EDIFileId
-			INNER JOIN importEDI_GS gs
+			INNER JOIN importx12.TagGS gs
 				ON gs.EDIFileId = ranges.EDIFileId
 
 	INSERT INTO [temp_855_Ack_Hdr] (PONumber,IssueDate,VendorID,ReferenceNo,ShipToLoc,ShipToSAN,BillToLoc,BillToSAN,ShipFromLoc,ShipFromSAN,TotalLines,TotalQty,CurrencyCode,InsertDateTime,Processed,ProcessedDateTime,ResponseACKSent,ResponseAckNo,GSNo)
@@ -54,13 +54,13 @@ BEGIN
 				ON ranges.EDIFileId = ac.EDIFileID
 			INNER JOIN Vendor_SAN_Codes vsc
 				ON ac.SC=vsc.SanCode
-			INNER JOIN [HPB_EDI].[dbo].[importEDI_BAK] bak
+			INNER JOIN [importx12].[TagBAK] bak
 				ON ranges.EDIFileID = bak.EDIFileID
 					AND bak.[LineNumber] BETWEEN ranges.[RangeStart]+1 AND ranges.[RangeEnd]-1
 					AND ranges.[TransactionSetControlNumber] = bak.[ControlNumberTransaction]
 			INNER JOIN [HPB_EDI].[dbo].[850_PO_Hdr] hdr
 				ON hdr.[PONumber]= bak.[PurchaseOrderNumber]
-			LEFT JOIN [HPB_EDI].[dbo].[importEDI_CTT] ctt
+			LEFT JOIN [importx12].[TagCTT] ctt
 				ON ctt.EDIFileId = bak.EDIFileId
 					AND ctt.[ControlNumberTransaction] = bak.[ControlNumberTransaction]
 					AND ctt.[ControlNumberGroup] = bak.[ControlNumberGroup]
@@ -99,7 +99,7 @@ BEGIN
 				ON ranges.EDIFileId = ac.EDIFileID
 			INNER JOIN Vendor_SAN_Codes vsc
 				ON ac.SC=vsc.SanCode
-			INNER JOIN [HPB_EDI].[dbo].[importEDI_BAK] bak
+			INNER JOIN [importx12].[TagBAK] bak
 				ON ranges.EDIFileID = bak.EDIFileID
 					AND bak.[LineNumber] BETWEEN ranges.[RangeStart]+1 AND ranges.[RangeEnd]-1
 					AND ranges.[TransactionSetControlNumber] = bak.[ControlNumberTransaction]
@@ -107,7 +107,7 @@ BEGIN
 				ON ii.[PurchaseOrderNumber]=bak.[PurchaseOrderNumber]
 			INNER JOIN [HPB_EDI].[dbo].[850_PO_Hdr] hdr
 				ON hdr.[PONumber]= bak.[PurchaseOrderNumber]
-			LEFT JOIN [importEDI_CUR] cur
+			LEFT JOIN [importx12].[TagCUR] cur
 				ON  cur.[EDIFileId] = bak.[EDIFileId]
 					AND cur.[ControlNumberGroup] = bak.[ControlNumberGroup]
 					AND cur.[ControlNumberTransaction] = bak.[ControlNumberTransaction]
@@ -115,7 +115,7 @@ BEGIN
 						AND cur.[LineNumber] BETWEEN ranges.[RangeStart]+1 AND ranges.[RangeEnd]-1
 						AND cur.[LineNumber] > bak.[LineNumber]
 						AND cur.[LineNumber]-bak.[LineNumber] = 1)
-			LEFT JOIN [importEDI_DTM] dtm
+			LEFT JOIN [importx12].[TagDTM] dtm
 				ON dtm.[EDIFileId] = bak.[EDIFileId]
 					AND dtm.[ControlNumberGroup] = bak.[ControlNumberGroup]
 					AND dtm.[ControlNumberTransaction] = bak.[ControlNumberTransaction]
@@ -123,7 +123,7 @@ BEGIN
 						AND dtm.[LineNumber] BETWEEN ranges.[RangeStart]+1 AND ranges.[RangeEnd]-1
 						AND dtm.[LineNumber] > COALESCE(cur.[LineNumber], bak.[LineNumber])
 						AND dtm.[LineNumber] - COALESCE(cur.[LineNumber], bak.[LineNumber]) BETWEEN 1 AND 10)
-			LEFT JOIN [importEDI_N1] n1
+			LEFT JOIN [importx12].[TagN1] n1
 				ON n1.[EDIFileId] = bak.[EDIFileId]
 					AND n1.[ControlNumberGroup] = bak.[ControlNumberGroup]
 					AND n1.[ControlNumberTransaction] = bak.[ControlNumberTransaction]
@@ -131,7 +131,7 @@ BEGIN
 						AND n1.[LineNumber] BETWEEN ranges.[RangeStart]+1 AND ranges.[RangeEnd]-1
 						AND n1.[LineNumber] > COALESCE(dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber])
 						AND n1.[LineNumber] - COALESCE(dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber]) =1)
-			LEFT JOIN [importEDI_PO1] po1
+			LEFT JOIN [importx12].[TagPO1] po1
 				ON po1.[EDIFileId] = bak.[EDIFileId]
 					AND po1.[ControlNumberGroup] = bak.[ControlNumberGroup] 
 					AND po1.[ControlNumberTransaction] = bak.[ControlNumberTransaction]
@@ -139,7 +139,7 @@ BEGIN
 						AND po1.[LineNumber] BETWEEN ranges.[RangeStart]+1 AND ranges.[RangeEnd]-1
 						AND po1.[LineNumber] > COALESCE(n1.[LineNumber], dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber])
 						AND po1.[LineNumber] - COALESCE(n1.[LineNumber], dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber]) BETWEEN  1 AND 2 )
-			LEFT JOIN [importEDI_CTP] ctp
+			LEFT JOIN [importx12].[TagCTP] ctp
 				ON ctp.[EDIFileId] = bak.[EDIFileId] 
 					AND ctp.[ControlNumberGroup] = bak.[ControlNumberGroup]
 					AND ctp.[ControlNumberTransaction] = bak.[ControlNumberTransaction]
@@ -147,7 +147,7 @@ BEGIN
 						AND ctp.[LineNumber] BETWEEN ranges.[RangeStart]+1 AND ranges.[RangeEnd]-1
 						AND ctp.[LineNumber] > COALESCE(po1.[LineNumber], n1.[LineNumber], dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber])
 						AND ctp.[LineNumber] - COALESCE(po1.[LineNumber], n1.[LineNumber], dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber]) >= 1 )
-			LEFT JOIN [importEDI_PID] pid
+			LEFT JOIN [importx12].[TagPID] pid
 				ON pid.[EDIFileId] = bak.[EDIFileId] 
 					AND pid.[ControlNumberGroup] = bak.[ControlNumberGroup]
 					AND pid.[ControlNumberTransaction] = bak.[ControlNumberTransaction]
@@ -155,7 +155,7 @@ BEGIN
 						AND pid.[LineNumber] BETWEEN ranges.[RangeStart]+1 AND ranges.[RangeEnd]-1
 						AND pid.[LineNumber] > COALESCE(ctp.[LineNumber], po1.[LineNumber], n1.[LineNumber], dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber])
 						AND pid.[LineNumber] - COALESCE(ctp.[LineNumber], po1.[LineNumber], n1.[LineNumber], dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber]) = 1 )
-			LEFT JOIN [importEDI_ACK] ack
+			LEFT JOIN [importx12].[TagACK] ack
 				ON ack.[EDIFileId] = bak.[EDIFileId] 
 					AND ack.[ControlNumberGroup] = bak.[ControlNumberGroup]
 					AND ack.[ControlNumberTransaction] = bak.[ControlNumberTransaction]
@@ -163,7 +163,7 @@ BEGIN
 						AND ack.[LineNumber] BETWEEN ranges.[RangeStart]+1 AND ranges.[RangeEnd]-1
 						AND ack.[LineNumber] > COALESCE(pid.[LineNumber], ctp.[LineNumber], po1.[LineNumber], n1.[LineNumber], dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber])
 						AND ack.[LineNumber] - COALESCE(pid.[LineNumber], ctp.[LineNumber], po1.[LineNumber], n1.[LineNumber], dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber]) = 1 )
-			LEFT JOIN [importEDI_SCH] sch
+			LEFT JOIN [importx12].[TagSCH] sch
 				ON sch.[EDIFileId] = bak.[EDIFileId] 
 					AND sch.[ControlNumberGroup] = bak.[ControlNumberGroup]
 					AND sch.[ControlNumberTransaction] = bak.[ControlNumberTransaction]
@@ -172,12 +172,12 @@ BEGIN
 						AND sch.[LineNumber] > COALESCE(ack.[LineNumber], pid.[LineNumber], ctp.[LineNumber], po1.[LineNumber], n1.[LineNumber], dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber])
 						AND sch.[LineNumber] - COALESCE(ack.[LineNumber], pid.[LineNumber], ctp.[LineNumber], po1.[LineNumber], n1.[LineNumber], dtm.[LineNumber],cur.[LineNumber], bak.[LineNumber]) = 1 )
 			LEFT JOIN (	select q.QualifierCode, QualifierDescription, QualifierStatusType, QualifierStatusActive
-						from [dbo].[importEDIQualifierTypes] qt
-							inner join [dbo].[importEDIQualifiers] q
+						from importx12.EDIQualifierTypes qt
+							inner join [importx12].[EDIQualifiers] q
 								on q.QualifierTypeID = qt.QualifierTypeID
-							left  join dbo.[importEDIQualifierShippingStatuses] qss
+							left  join [importX12].[EDIQualifierShippingStatuses] qss
 								on q.qualifierid=qss.QualifierID
-							left join [dbo].[importEDIQualifierShippingStatusTypes] sst
+							left join [importx12].[EDIQualifierShippingStatusTypes] sst
 								on sst.QualifierShippingStatusTypeID = qss.QualifierShippingStatusTypesID
 						where qt.QualifierType = 'industry code') orderstatus
 				on orderstatus.QualifierCode = rtrim(ack.IndustryCode)

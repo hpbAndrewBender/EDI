@@ -8,6 +8,33 @@ namespace FormatBBV3.Logic.Data.ShipNotice
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 		private string ActionType { get; set; } = "ShipNotice";
 		private string FileFormat { get; set; } = "BBV3";
+		public bool Successful { private set; get; }
+
+		public SQL
+		(
+			int batchnumber,
+			List<Models.Files.ShipNotice.CR_ASNCompany> itemsCR,
+			List<Models.Files.ShipNotice.OD_ASNShipmentDetail> itemsOD,
+			List<Models.Files.ShipNotice.OP_ASNPack> itemsOP,
+			List<Models.Files.ShipNotice.OR_ASNShipment> itemsOR
+		)
+		{
+			bool result = false;
+			try
+			{
+				if (itemsCR != null && itemsCR.Count > 0) { SaveCR_ASNCompany(itemsCR,batchnumber); };
+				if (itemsOD != null && itemsOD.Count > 0) { SaveOD_ASNShipmentDetail(itemsOD,batchnumber); };
+				if (itemsOP != null && itemsOP.Count > 0) { SaveOP_ASNPack(itemsOP,batchnumber); };
+				if (itemsOR != null && itemsOR.Count > 0) { SaveOR_ASNShipment(itemsOR,batchnumber); };															   
+				result = true;
+			}
+			catch (Exception ex)
+			{
+				log.Error(ex);
+				result = false;
+			}
+			Successful =  result;
+		}
 
 		public bool SaveCR_ASNCompany(List<Models.Files.ShipNotice.CR_ASNCompany> items, int batchnumber)
 		{

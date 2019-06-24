@@ -16,7 +16,7 @@ namespace FormatBBV3.Logic.Data.ShipNotice
 			int batchnumber = 0;
 			try
 			{
-				batchnumber = CommonLib.Logic.Globals.CreateBatch(filename, vendor, 4);
+				batchnumber = CommonLib.Logic.Globals.CreateBatch("BBV3", filename, vendor, 4);
 			}
 			catch (Exception ex) 
 			{
@@ -81,6 +81,7 @@ namespace FormatBBV3.Logic.Data.ShipNotice
 			string typename = string.Empty;
 			int shipmentsCount = 0;
 			int detailsCount = 0;
+			bool savedokay = false;
 
 			try
 			{
@@ -158,14 +159,7 @@ namespace FormatBBV3.Logic.Data.ShipNotice
 						detailsCount = 0;
 						file.Shipments.Add(singleShipment);
 					}
-					using (SQL sql = new SQL())
-					{
-						// add batch info
-						sql.SaveCR_ASNCompany(cr, batchnumber);
-						sql.SaveOD_ASNShipmentDetail(od, batchnumber);
-						sql.SaveOP_ASNPack(op, batchnumber);
-						sql.SaveOR_ASNShipment(or, batchnumber);
-					}
+					using (SQL sql = new SQL(batchnumber, cr, od, op, or)) { savedokay = sql.Successful; }				
 				}
 			}
 			catch (Exception ex)

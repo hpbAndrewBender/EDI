@@ -24,9 +24,9 @@ BEGIN
 		from (	SELECT DISTINCT EDIFileId
 				FROM  vuImportEDI_Unprocessed_TransactionRanges
 				WHERE EDIType = @EDINumber) ranges
-			INNER JOIN importEDI_ISA isa
+			INNER JOIN importx12.TagISA isa
 				ON isa.EDIFileId = ranges.EDIFileId
-			INNER JOIN importEDI_GS gs
+			INNER JOIN importx12.TagGS gs
 				ON gs.EDIFileId = ranges.EDIFileId
 
 
@@ -69,7 +69,7 @@ BEGIN
 			FROM vuImportEDI_Unprocessed_TransactionRanges ranges
 				INNER JOIN @AppCodes ac
 					ON ranges.EDIFileId = ac.EDIFileID
-				INNER JOIN [importEDI_BIG] big
+				INNER JOIN [importx12].[TagBIG] big
 					ON ranges.EDIFileID = big.EDIFileId
 						AND ranges.TransactionSetControlNumber = big.ControlNumberTransaction
 				INNER JOIN @Inserted ii
@@ -77,6 +77,6 @@ BEGIN
 						AND ii.[InvoiceNumber]=big.[InvoiceNumber]
 				INNER JOIN Vendor_SAN_Codes vsc
 					ON ac.SC=vsc.SanCode
-				INNER JOIN [HPB_EDI].[dbo].[importEDI_BEG] beg
+				INNER JOIN [importx12].[TagBEG] beg
 					ON beg.EDIfileID = ranges.EDIFileID
 END

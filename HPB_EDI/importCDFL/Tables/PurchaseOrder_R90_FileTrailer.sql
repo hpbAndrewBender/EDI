@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [importCDFL].[PurchaseOrder_R90_FileTrailer] (
     [Id]                        INT          IDENTITY (1, 1) NOT NULL,
+    [BatchId]                   INT          NULL,
     [RecordCode]                TINYINT      NOT NULL,
     [SequenceNumber]            SMALLINT     NOT NULL,
     [TotalLineItemsinfile]      VARCHAR (22) NOT NULL,
@@ -16,6 +17,8 @@
     [RecordCount80To99]         SMALLINT     NOT NULL,
     CONSTRAINT [PK_PurchaseOrder_R90_FileTrailer] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

@@ -4,13 +4,14 @@ using System.Text;
 
 namespace FormatCDFL.Logic.Data.PurchaseAcknowledgement
 {
-	public class SQL
+	public class SQL : IDisposable
 	{
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 		private string ActionType { get; set; } = "PurchaseAcknowledgement";
 		private string FileFormat { get; set; } = "CDFL";
+		public bool Successful { private set; get; }
 
-		public bool Save
+		public SQL 
 		(
 			int batchnumber,
 			List<Models.Files.PurchaseAcknowledgement.R02_FileHeader> items02,
@@ -28,7 +29,7 @@ namespace FormatCDFL.Logic.Data.PurchaseAcknowledgement
 			List<Models.Files.PurchaseAcknowledgement.R91_FileTrailer> items91
 		)
 		{
-			bool success = false;
+			bool result = false;
 			try
 			{
 				if (items02 != null && items02.Count > 0) { SaveR02_FileHeader(items02, batchnumber); }
@@ -44,14 +45,14 @@ namespace FormatCDFL.Logic.Data.PurchaseAcknowledgement
 				if (items44 != null && items44.Count > 0) { SaveR44_ItemNumberOrPrice(items44, batchnumber); }
 				if (items59 != null && items59.Count > 0) { SaveR59_PurchaseOrderControlTotals(items59, batchnumber); }
 				if (items91 != null && items91.Count > 0) { SaveR91_FileTrailer(items91, batchnumber); }
-				success = true;
+				result = true;
 			}
 			catch (Exception ex)
 			{
 				log.Error(ex);
-				success = false;
+				result = false;
 			}
-			return success;
+			Successful= result;
 		}
 
 		public bool SaveR02_FileHeader(List<Models.Files.PurchaseAcknowledgement.R02_FileHeader> items, int batchnumber)
@@ -480,6 +481,41 @@ namespace FormatCDFL.Logic.Data.PurchaseAcknowledgement
 			}
 			return result;
 		}
+
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					// TODO: dispose managed state (managed objects).
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+				// TODO: set large fields to null.
+
+				disposedValue = true;
+			}
+		}
+
+		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+		// ~SQ() {
+		//   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+		//   Dispose(false);
+		// }
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+			// TODO: uncomment the following line if the finalizer is overridden above.
+			// GC.SuppressFinalize(this);
+		}
+		#endregion
 
 	}
 }

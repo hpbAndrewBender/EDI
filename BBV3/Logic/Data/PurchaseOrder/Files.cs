@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using CommonLib.Logic;
 using CommonLib.Extensions;
+using System.Linq;
 
 namespace FormatBBV3.Logic.Data.PurchaseOrder
 {
@@ -15,7 +16,7 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 			int batchnumber = 0;
 			try
 			{
-				batchnumber = CommonLib.Logic.Globals.CreateBatch(filename, vendor, 2);
+				batchnumber = CommonLib.Logic.Globals.CreateBatch("BBV3", filename, vendor, 2);
 			}
 			catch (Exception ex)
 			{
@@ -27,6 +28,7 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 		public bool WriteFileAddingSequence(string filename, Models.Files.PurchaseOrder.DataSequence.V3 data, bool checkseq)
 		{
 			List<object> writelist = new List<object>();
+			List<(string code, Type type)> used = new List<(string code, Type type)>();
 			bool success = false;
 			short seqnum = 1;
 			try
@@ -35,21 +37,25 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 
 				data.FileHeaderRecord.SequenceNumber = seqnum++;
 				writelist.Add(data.FileHeaderRecord);
+				if ((from u in used where u.code == data.FileHeaderRecord.RecordCode select u.code).Count() == 0) { used.Add((data.FileHeaderRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R00_ClientFileHeader))); }
 				if (data.PurchaseOrders != null && data.PurchaseOrders.Count > 0)
 				{
 					foreach (Models.Files.PurchaseOrder.DataSequence.PurchaseOrder item in data.PurchaseOrders)
 					{
 						item.ClientHeaderRecord.SequenceNumber = seqnum++;
 						writelist.Add(item.ClientHeaderRecord);
-						if (Common.IsValid(item.FixedHandlingInstructionsRecord, checkseq))
+						if ((from u in used where u.code == item.ClientHeaderRecord.RecordCode select u.code).Count() == 0) { used.Add((item.ClientHeaderRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R10_ClientHeader))); }
+						if (Common.IsValid(item.FixedHandlingInstructionsRecord, checkseq) && !string.IsNullOrEmpty(item.FixedHandlingInstructionsRecord.PONumber))
 						{
 							item.FixedHandlingInstructionsRecord.SequenceNumber = seqnum++;
 							writelist.Add(item.FixedHandlingInstructionsRecord);
+							if ((from u in used where u.code == item.FixedHandlingInstructionsRecord.RecordCode select u.code).Count() == 0) { used.Add((item.FixedHandlingInstructionsRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions))); }
 						}
 						if (Common.IsValid(item.PurchaseOrderOptionsRecord, checkseq))
 						{
 							item.PurchaseOrderOptionsRecord.SequenceNumber = seqnum++;
 							writelist.Add(item.PurchaseOrderOptionsRecord);
+							if ((from u in used where u.code == item.PurchaseOrderOptionsRecord.RecordCode select u.code).Count() == 0) { used.Add((item.PurchaseOrderOptionsRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R21_PurchaseOrderOptions))); }
 						}
 						if (item.PurchaseOrderDetails != null && item.PurchaseOrderDetails.Count > 0)
 						{
@@ -59,11 +65,13 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 								{
 									detail.LineItemDetail.SequenceNumber = seqnum++;
 									writelist.Add(detail.LineItemDetail);
+									if ((from u in used where u.code == detail.LineItemDetail.RecordCode select u.code).Count() == 0) { used.Add((detail.LineItemDetail.RecordCode, typeof(Models.Files.PurchaseOrder.R40_LineItemDetail))); }
 								}
 								if (Common.IsValid(detail.AdditionalLineItemDetail, checkseq))
 								{
 									detail.AdditionalLineItemDetail.SequenceNumber = seqnum++;
 									writelist.Add(detail.AdditionalLineItemDetail);
+									if ((from u in used where u.code == detail.AdditionalLineItemDetail.RecordCode select u.code).Count() == 0) { used.Add((detail.AdditionalLineItemDetail.RecordCode, typeof(Models.Files.PurchaseOrder.R41_AdditionalLineItemDetail))); }
 								}
 								if (detail.Imprint != null && detail.Imprint.Count > 0)
 								{
@@ -73,6 +81,7 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 										{
 											imprint.SequenceNumber = seqnum++;
 											writelist.Add(imprint);
+											if ((from u in used where u.code == imprint.RecordCode select u.code).Count() == 0) { used.Add((imprint.RecordCode, typeof(Models.Files.PurchaseOrder.R45_Imprint))); }
 										}
 									}
 								}
@@ -80,6 +89,7 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 								{
 									detail.StickerBarcodeDataRecord.SequenceNumber = seqnum++;
 									writelist.Add(detail.StickerBarcodeDataRecord);
+									if ((from u in used where u.code == detail.StickerBarcodeDataRecord.RecordCode select u.code).Count() == 0) { used.Add((detail.StickerBarcodeDataRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R46_StickerBarcodeData))); }
 								}
 								if (detail.StickerTextLines != null && detail.StickerTextLines.Count > 0)
 								{
@@ -89,6 +99,7 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 										{
 											text.SequenceNumber = seqnum++;
 											writelist.Add(text);
+											if ((from u in used where u.code == text.RecordCode select u.code).Count() == 0) { used.Add((text.RecordCode, typeof(Models.Files.PurchaseOrder.R46_StickerBarcodeData))); }
 										}
 									}
 								}
@@ -101,25 +112,19 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 				{
 					data.PurchaseOrderTrailerRecord.SequenceNumber = seqnum++;
 					writelist.Add(data.PurchaseOrderTrailerRecord);
+					if ((from u in used where u.code == data.PurchaseOrderTrailerRecord.RecordCode select u.code).Count() == 0) { used.Add((data.PurchaseOrderTrailerRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R50_PurchaseOrderTrailer))); }
 				}
 				if (Common.IsValid(data.FileTrailerRecord, checkseq))
 				{
 					data.FileTrailerRecord.SequenceNumber = seqnum++;
 					writelist.Add(data.FileTrailerRecord);
+					if ((from u in used where u.code == data.FileTrailerRecord.RecordCode select u.code).Count() == 0) { used.Add((data.FileTrailerRecord.RecordCode, typeof(Models.Files.PurchaseOrder.R90_FileTrailer))); }
 				}
 				MultiRecordEngine engine = new MultiRecordEngine
 				(
-					typeof(Models.Files.PurchaseOrder.R00_ClientFileHeader),
-					typeof(Models.Files.PurchaseOrder.R10_ClientHeader),
-					typeof(Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions),
-					typeof(Models.Files.PurchaseOrder.R21_PurchaseOrderOptions),
-					typeof(Models.Files.PurchaseOrder.R40_LineItemDetail),
-					typeof(Models.Files.PurchaseOrder.R41_AdditionalLineItemDetail),
-					typeof(Models.Files.PurchaseOrder.R45_Imprint),
-					typeof(Models.Files.PurchaseOrder.R46_StickerBarcodeData),
-					typeof(Models.Files.PurchaseOrder.R46_StickerTextLines),
-					typeof(Models.Files.PurchaseOrder.R50_PurchaseOrderTrailer),
-					typeof(Models.Files.PurchaseOrder.R90_FileTrailer)
+					(from u in used
+					 orderby u.code
+					 select u.type).Distinct().ToArray()
 				)
 				{
 					RecordSelector = new RecordTypeSelector(Models.Files.Invoice.Selectors.V3.Custom)
@@ -227,6 +232,7 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 			string typename = string.Empty;
 			int orderdetailCount = 0;
 			int orderCount = 0;
+			bool savedokay = false;
 
 			try
 			{
@@ -359,21 +365,7 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 								break;
 						}
 					}
-					using (SQL sql = new SQL())
-					{
-						// add batch info
-						sql.SaveR00_ClientFileHeader(r00, batchnumber);
-						sql.SaveR10_ClientHeader(r10, batchnumber);
-						sql.SaveR20_FixedSpecialHandlingInstructions(r20, batchnumber);
-						sql.SaveR21_PurchaseOrderOptions(r21, batchnumber);
-						sql.SaveR40_LineItemDetail(r40, batchnumber);
-						sql.SaveR41_AdditionalLineItemDetail(r41, batchnumber);
-						sql.SaveR45_Imprint(r45, batchnumber);
-						sql.SaveR46_StickerBarcode(r46barcode, batchnumber);
-						sql.SaveR46_StickerTextLines(r46text, batchnumber);
-						sql.SaveR50_PurchaseOrderTrailer(r50, batchnumber);
-						sql.SaveR90_FileTrailer(r90, batchnumber);
-					}
+					using (SQL sql = new SQL(batchnumber, r00, r10, r20, r21, r40, r41, r45, r46barcode, r46text, r50, r90)) { savedokay = sql.Successful; }
 				}
 			}
 			catch (Exception ex)

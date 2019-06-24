@@ -33,14 +33,14 @@ BEGIN
 		FROM (	SELECT DISTINCT [EDIFileId]
 				FROM  [HPB_EDI].[dbo].[vuImportEDI_Unprocessed_TransactionRanges]
 				WHERE [EDIType]=@EDINumber) ranges
-			INNER JOIN [HPB_EDI].[dbo].[importEDI_ISA] isa
+			INNER JOIN [importx12].[TagISA] isa
 				ON isa.[EDIFileId]=ranges.[EDIFileId]
-			INNER JOIN [HPB_EDI].[dbo].[importEDI_GS] gs
+			INNER JOIN [importx12].[TagGS] gs
 				ON gs.[EDIFileId]=ranges.[EDIFileId]
 
 	INSERT INTO @HL ([EDIFileID],[ControlNumberGroup],[ControlNumberTransaction],[HierarchicalLevelCode],[HierarchicalParentIDNumber],[RangeStart])
 		SELECT hl.[EDIFileId], hl.[ControlNumberGroup], hl.[ControlNumberTransaction], hl.[HierarchicalLevelCode], hl.[HierarchicalParentIDNumber], MIN(hl.[LineNumber]) AS RangeStart
-		FROM [HPB_EDI].[dbo].[importEDI_HL] hl
+		FROM [importx12].[TagHL] hl
 			INNER JOIN @AppCodes ac
 				ON ac.[EDIFileID]=hl.[EDIFileId]
 		GROUP BY hl.[EDIFileId], hl.[ControlNumberGroup], hl.[ControlNumberTransaction], hl.[HierarchicalLevelCode], hl.[HierarchicalParentIDNumber]
@@ -73,7 +73,7 @@ BEGIN
 				,NULL AS ASNACKSent
 				,NULL AS ASNAckNo
 				,bsn.[ControlNumberGroup] AS GSNo
-		FROM [HPB_EDI].[dbo].[importEDI_BSN] bsn		
+		FROM [importx12].[TagBSN] bsn		
 			INNER JOIN [HPB_EDI].[dbo].[vuImportEDI_Unprocessed_TransactionRanges] ranges
 				ON bsn.[EDIFileId]=ranges.[EDIFileId]
 					AND ranges.[RangeStart]=bsn.[LineNumber]-1
@@ -89,7 +89,7 @@ BEGIN
 									,prf.[AssignedIdentification],prf.[ContractNumber],prf.[Date], prf.[LineNumber] AS prf_linenumber, prf.[PRFId], prf.[PurchaseOrderNumber]
 									,prf.[PurchaseOrderTypeCode], prf.[ReleaseNumber]
 							FROM (	SELECT * FROM @HL  WHERE [HierarchicalLevelCode]='O' AND [HierarchicalParentIDNumber]=1) hlO
-								LEFT JOIN [HPB_EDI].[dbo].[importEDI_PRF] prf
+								LEFT JOIN [importx12].[TagPRF] prf
 									ON prf.[EDIFileId]=hlO.[EDIFileID]
 										AND prf.[ControlNumberGroup]=hlO.[ControlNumberGroup]
 										AND prf.[ControlNumberTransaction]=hlO.[ControlNumberTransaction]
@@ -109,23 +109,23 @@ BEGIN
 								,ref.[LineNumber] AS ref_linenumber,ref.[ReferenceIdentification],ref.[ReferenceIdentificationQualifier],ref.[REFId]
 								,dtm.[Century],dtm.[Date],dtm.[DateTimeQualifier],dtm.[DTMId],dtm.[LineNumber] AS dtm_linenumber
 						FROM (	SELECT * FROM @HL WHERE [HierarchicalLevelCode]='S' AND [HierarchicalParentIDNumber]=1 ) hlS
-							LEFT JOIN [HPB_EDI].[dbo].[importEDI_TD1] td1
+							LEFT JOIN [importx12].[TagTD1] td1
 								ON td1.EDIFileId = hls.EDIFileID
 									AND td1.[ControlNumberGroup]=hls.[ControlNumberGroup]
 									AND td1.[ControlNumberTransaction]=hls.ControlNumberTransaction
 									AND td1.[LineNumber] > hls.RangeStart
-							LEFT JOIN [HPB_EDI].[dbo].[importEDI_TD5] td5
+							LEFT JOIN [importx12].[TagTD5] td5
 								ON td5.[EDIFileId]=hls.[EDIFileID]
 									AND td5.[ControlNumberGroup]=hls.[ControlNumberGroup]
 									AND td5.[ControlNumberTransaction]=hls.[ControlNumberTransaction]
 									AND td5.[LineNumber] > COALESCE(td1.[LineNumber], hls.[RangeStart])
-							LEFT JOIN [HPB_EDI].[dbo].[importEDI_REF] ref
+							LEFT JOIN [importx12].[TagREF] ref
 								ON ref.[EDIFileId]=hls.[EDIFileID]
 									AND ref.[ControlNumberGroup]=hls.[ControlNumberGroup]
 									AND ref.[ControlNumberTransaction]=hls.[ControlNumberTransaction]
 									AND ref.[LineNumber] > COALESCE(td5.[linenumber], td1.[linenumber], hls.[RangeStart])
 									AND ref.[ReferenceIdentificationQualifier]='CN'
-							LEFT JOIN [HPB_EDI].[dbo].[importEDI_DTM] dtm									
+							LEFT JOIN [importx12].[TagDTM] dtm									
 								ON dtm.EDIFileId = hls.EDIFileID
 									AND dtm.[DateTimeQualifier]='011' -- shipping
 									AND dtm.[ControlNumberGroup]=hls.[ControlNumberGroup]
@@ -135,7 +135,7 @@ BEGIN
 				ON loop_s.[EDIFileID]=bsn.[EDIFileId]
 					AND loop_s.[ControlNumberGroup]=bsn.[ControlNumberGroup]
 					AND loop_s.[ControlNumberTransaction]=bsn.[ControlNumberTransaction]
-			LEFT JOIN [HPB_EDI].[dbo].[importEDI_CTT] ctt
+			LEFT JOIN [importx12].[TagCTT] ctt
 				ON ctt.[EDIFileId]=bsn.[EDIFileId]
 					AND ctt.[ControlNumberGroup]=bsn.[ControlNumberGroup]
 					AND ctt.[ControlNumberTransaction]=bsn.[ControlNumberTransaction]
@@ -160,7 +160,7 @@ BEGIN
 				--,'loops', loop_s.*
 				--,'loopp', loop_p.*
 				--,'loopi', loop_i.*
-		FROM [HPB_EDI].[dbo].[importEDI_BSN] bsn		
+		FROM [importx12].[TagBSN] bsn		
 			INNER JOIN [HPB_EDI].[dbo].[vuImportEDI_Unprocessed_TransactionRanges] ranges
 				ON bsn.[EDIFileId]=ranges.[EDIFileId]
 					AND ranges.[RangeStart]=bsn.[LineNumber]-1
@@ -173,7 +173,7 @@ BEGIN
 			INNER JOIN (
 							SELECT	 hlO.[ControlNumberGroup],hlO.[ControlNumberTransaction],hlO.[EDIFileID],prf.[PurchaseOrderNumber] 
 							FROM (SELECT * FROM @HL WHERE [HierarchicalLevelCode]='O') hlO
-								INNER JOIN [HPB_EDI].[dbo].[importEDI_PRF] prf
+								INNER JOIN [importx12].[TagPRF] prf
 									ON prf.[EDIFileId]=hlO.[EDIFileID]
 										AND prf.[ControlNumberGroup]=hlO.[ControlNumberGroup]
 										AND prf.[ControlNumberTransaction]=hlO.[ControlNumberTransaction]
@@ -190,18 +190,18 @@ BEGIN
 									,hlS.[UID],hlS.[RangeStart]
 									,ref.ReferenceIdentification
 							FROM  (SELECT * FROM @HL WHERE [HierarchicalLevelCode]='S') hlS
-								LEFT JOIN importEDI_TD1 td1
+								LEFT JOIN importx12.TagTD1 td1
 									ON td1.EDIFileId = hls.EDIFileID
 										AND td1.ControlNumberGroup = hlS.ControlNumberGroup
 										AND td1.ControlNumberTransaction = hlS.ControlNumberTransaction
 										AND td1.LineNumber > hls.RangeStart
-								LEFT JOIN importEDI_TD5 td5
+								LEFT JOIN importx12.TagTD5 td5
 									ON td5.EDIFileId = hls.EDIFileID
 										AND td5.ControlNumberGroup = hlS.ControlNumberGroup
 										AND td5.ControlNumberTransaction = hlS.ControlNumberTransaction
 										AND td5.LineNumber = (COALESCE(td1.LineNumber,hlS.RangeStart)+1)
 								LEFT JOIN (select r.*
-											from importEDI_REF r
+											from importx12.TagREF r
 												inner join @AppCodes ac
 													on r.EDIFileId = ac.EDIFileID
 											where ReferenceIdentificationQualifier = 'CN'
@@ -221,17 +221,17 @@ BEGIN
 									,mea.[MeasurementValue]
 									,man.[LineNumber] AS man_LineNumber,man.[MarksAndNumbers_01],man.[MarksAndNumbers_02],man.[MarksAndNumbersQualifier_01],man.[MarksAndNumbersQualifier_02]
 							FROM (SELECT * FROM @HL WHERE [HierarchicalLevelCode]='P') hlP
-								LEFT JOIN [HPB_EDI].[dbo].[importEDI_REF] ref
+								LEFT JOIN [importx12].[TagREF] ref
 									ON ref.[EDIFileId]=hlP.[EDIFileID]
 										AND ref.[ControlNumberGroup]=hlP.[ControlNumberGroup]
 										AND ref.[ControlNumberTransaction]=hlp.[ControlNumberTransaction]
 										AND ref.[LineNumber] = hlp.[RangeStart]+1								
-								LEFT JOIN [HPB_EDI].[dbo].[importEDI_MEA] mea
+								LEFT JOIN [importx12].[TagMEA] mea
 									ON mea.[EDIFileId]=hlP.[EDIFileID]
 										AND mea.[ControlNumberGroup]=hlP.[ControlNumberGroup]
 										AND mea.[ControlNumberTransaction]=hlp.[ControlNumberTransaction]
 										AND (mea.[LineNumber] > hlp.[RangeStart] and mea.linenumber = (COALESCE(ref.LineNumber,hlP.RangeStart)+1))
-								LEFT JOIN [HPB_EDI].[dbo].[importEDI_MAN] man
+								LEFT JOIN [importx12].[TagMAN] man
 									ON man.[EDIFileId]=hlP.[EDIFileID]
 										AND man.[ControlNumberGroup]=hlP.[ControlNumberGroup]
 										AND man.[ControlNumberTransaction]=hlp.[ControlNumberTransaction]
@@ -251,13 +251,13 @@ BEGIN
 							FROM (SELECT * FROM @HL WHERE [HierarchicalLevelCode]='I') hlI 
 								LEFT JOIN (
 											SELECT lin_01.linid, lin_01.EDIFileId, lin_01.LineNumber, lin_01.ControlNumberGroup, lin_01.ControlNumberTransaction, lin_01.AssignedIdentification, lin_01.ProductServiceIDQualifier_01 as ProductServiceIDQualifier, lin_01.ProductServiceID_01 as ProductServiceID
-											FROM importEDI_LIN  lin_01
+											FROM importx12.TagLIN  lin_01
 												INNER JOIN @AppCodes ac
 													ON lin_01.EDIFileId = ac.EDIFileID
 											WHERE ProductServiceIDQualifier_01=  'EN'
 											UNION
 											SELECt lin_02.linid, lin_02.EDIFileId, lin_02.LineNumber, lin_02.ControlNumberGroup, lin_02.ControlNumberTransaction, lin_02.AssignedIdentification, lin_02.ProductServiceIDQualifier_02 as ProductServiceIDQualifier, lin_02.ProductServiceID_02 as ProductServiceID
-											FROM importEDI_LIN  lin_02
+											FROM importx12.TagLIN  lin_02
 												INNER JOIN @AppCodes ac
 													ON lin_02.EDIFileId = ac.EDIFileID
 											WHERE ProductServiceIDQualifier_02=  'EN'
@@ -266,7 +266,7 @@ BEGIN
 										AND lin.[ControlNumberGroup]=hlI.[ControlNumberGroup]
 										AND lin.[ControlNumberTransaction]=hlI.[ControlNumberTransaction]
 										AND lin.[LineNumber] = hlI.[RangeStart]+1
-								LEFT JOIN [HPB_EDI].[dbo].[importEDI_SN1] sn1
+								LEFT JOIN [importx12].[TagSN1] sn1
 									ON sn1.[EDIFileId]=hlI.[EDIFileID]
 										AND sn1.[ControlNumberGroup]=hlI.[ControlNumberGroup]
 										AND sn1.[ControlNumberTransaction]=hlI.[ControlNumberTransaction]

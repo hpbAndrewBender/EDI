@@ -1,4 +1,5 @@
-﻿	CREATE VIEW [dbo].[856_ASN_HDR]
+﻿
+	CREATE VIEW [dbo].[856_ASN_HDR]
 			AS
 				SELECT	 [ShipmentID] AS [ShipID]
 						,CAST([PONumber] AS CHAR(6)) AS [PONumber]
@@ -22,4 +23,4 @@
 						,[ASNACKSent]
 						,CAST([ASNAckNo] AS NVARCHAR(10)) AS [ASNAckNo]
 						,CAST([GSNo] AS NVARCHAR(10)) AS [GSNo]
-				FROM [EDI].[ShipmentHeader] 
+				FROM [BLK].[ShipmentHeader] 

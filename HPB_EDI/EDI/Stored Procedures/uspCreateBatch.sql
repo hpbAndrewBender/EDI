@@ -1,6 +1,8 @@
-﻿CREATE PROCEDURE EDI.uspCreateBatch
+﻿
+CREATE PROCEDURE [EDI].[uspCreateBatch]
 (
-	 @file VARCHAR(255)
+	 @method varchar(5)
+	,@file VARCHAR(255)
 	,@vend VARCHAR(20)
 	,@type TINYINT
 )
@@ -12,10 +14,16 @@ BEGIN
 
 	BEGIN TRANSACTION insert_batch
 	BEGIN TRY
-		INSERT INTO ImportBBV3.Batch(batchitemid, VendorID, [Filename])
-			OUTPUT inserted.Id, inserted.BatchItemId, inserted.VendorID INTO @Inserted (id, BatchItemID, VendorID)
-			VALUES (@type, @vend,@file)
-			SET @Success = 1
+		IF @method = 'BBV3'
+			INSERT INTO ImportBBV3.Batch(batchitemid, VendorID, [Filename])
+				OUTPUT inserted.Id, inserted.BatchItemId, inserted.VendorID INTO @Inserted (id, BatchItemID, VendorID)
+				VALUES (@type, @vend,@file)
+				SET @Success = 1
+		IF @method = 'CDFL'
+			INSERT INTO importCDFL.Batch(batchitemid, VendorID, [Filename])
+				OUTPUT inserted.Id, inserted.BatchItemId, inserted.VendorID INTO @Inserted (id, BatchItemID, VendorID)
+				VALUES (@type, @vend,@file)
+				SET @Success = 1
 	END TRY
 	BEGIN CATCH
 		SELECT	 @Success = 0

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DataHPBEDI.Models;
+using Bulk = DataHPBEDI.Models.BLK;
+using Direct = DataHPBEDI.Models.CDF;
 
 namespace VendorIngramContent.Logic.Invoice
 {
@@ -10,13 +11,13 @@ namespace VendorIngramContent.Logic.Invoice
 	{
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
-		public List<(DataHPBEDI.Models.EDI.Invoice.Header header, List<DataHPBEDI.Models.EDI.Invoice.Detail> details)> BBV3(string fullpathandname, string vendor)
+		public List<(Bulk.Invoice.Header header, List<Bulk.Invoice.Detail> details)> BBV3(string fullpathandname, string vendor)
 		{
-			DataHPBEDI.Models.EDI.Invoice.Header header = null;
-			List<DataHPBEDI.Models.EDI.Invoice.Detail> details = new List<DataHPBEDI.Models.EDI.Invoice.Detail>();
-			DataHPBEDI.Models.EDI.Invoice.Detail detail = null;
+			Bulk.Invoice.Header header = null;
+			List<Bulk.Invoice.Detail> details = new List<Bulk.Invoice.Detail>();
+			Bulk.Invoice.Detail detail = null;
 			FormatBBV3.Models.Files.Invoice.DataSequence.V3 invBBV3 = new FormatBBV3.Models.Files.Invoice.DataSequence.V3();
-			List<(DataHPBEDI.Models.EDI.Invoice.Header header, List<DataHPBEDI.Models.EDI.Invoice.Detail> details)> invoices = new List<(DataHPBEDI.Models.EDI.Invoice.Header header, List<DataHPBEDI.Models.EDI.Invoice.Detail> details)>();
+			List<(Bulk.Invoice.Header header, List<Bulk.Invoice.Detail> details)> invoices = new List<(Bulk.Invoice.Header header, List<Bulk.Invoice.Detail> details)>();
 			List<string> storelist = new List<string>();
 			List<DataHPBEDI.Models.MetaData.VendorStoreData> VendorStore = null;
 
@@ -50,8 +51,8 @@ namespace VendorIngramContent.Logic.Invoice
 						(string storenumber, string storesan) = (from vs in VendorStore
 																 where vs.VendorShipTo == invBBV3.Invoices[invoicecount].InvoiceHeaderRecord.IngramShipToAccountNumber
 																 select (vs.LocationNumber, vs.SanAccount)).First();
-						details = new List<DataHPBEDI.Models.EDI.Invoice.Detail>();
-						header = new DataHPBEDI.Models.EDI.Invoice.Header
+						details = new List<Bulk.Invoice.Detail>();
+						header = new Bulk.Invoice.Header
 						{
 							BillToLoc = "",
 							BillToSAN = "",
@@ -82,7 +83,7 @@ namespace VendorIngramContent.Logic.Invoice
 
 						for (int detailcount = 0; detailcount < invPOs[pocount].Items.Count; detailcount++)
 						{
-							detail = new DataHPBEDI.Models.EDI.Invoice.Detail
+							detail = new Bulk.Invoice.Detail
 							{
 								// InvoiceId = "",
 								// InvoiceItemId = "",
@@ -115,13 +116,13 @@ namespace VendorIngramContent.Logic.Invoice
 			return invoices;
 		}
 
-		public List<(DataHPBEDI.Models.EDI.Invoice.Header header, List<DataHPBEDI.Models.EDI.Invoice.Detail> details)> CDFL(string fullpathandname, string vendor)
+		public List<(Direct.Invoice.Header header, List<Direct.Invoice.Detail> details)> CDFL(string fullpathandname, string vendor)
 		{
-			DataHPBEDI.Models.EDI.Invoice.Header header = null;
-			List<DataHPBEDI.Models.EDI.Invoice.Detail> details = new List<DataHPBEDI.Models.EDI.Invoice.Detail>();
-			DataHPBEDI.Models.EDI.Invoice.Detail detail = null;
+			Direct.Invoice.Header header = null;
+			List<Direct.Invoice.Detail> details = new List<Direct.Invoice.Detail>();
+			Direct.Invoice.Detail detail = null;
 			FormatCDFL.Models.Files.Invoice.DataSequence.V3 invCDFL = new FormatCDFL.Models.Files.Invoice.DataSequence.V3();
-			List<(DataHPBEDI.Models.EDI.Invoice.Header header, List<DataHPBEDI.Models.EDI.Invoice.Detail> details)> invoices = new List<(DataHPBEDI.Models.EDI.Invoice.Header header, List<DataHPBEDI.Models.EDI.Invoice.Detail> details)>();
+			List<(Direct.Invoice.Header header, List<Direct.Invoice.Detail> details)> invoices = new List<(Direct.Invoice.Header header, List<Direct.Invoice.Detail> details)>();
 			List<string> storelist = new List<string>();
 			List<DataHPBEDI.Models.MetaData.VendorStoreData> VendorStore = null;
 

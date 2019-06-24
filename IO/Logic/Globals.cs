@@ -13,7 +13,7 @@ namespace CommonLib.Logic
 		public static string Env { get; set; }
 		public static List<(DateTime Date, string Location, string ErrorLEvel, string Message)> Message { get; set; }
 
-		public static int CreateBatch(string filename, string vendor, byte batchitem)
+		public static int CreateBatch(string method, string filename, string vendor, byte batchitem)
 		{
 			NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 			int result = 0;
@@ -31,6 +31,7 @@ namespace CommonLib.Logic
 						},
 						new List<System.Data.SqlClient.SqlParameter>()
 						{
+							new System.Data.SqlClient.SqlParameter() { ParameterName = "@method", SqlDbType = System.Data.SqlDbType.VarChar, Value = method },
 							new System.Data.SqlClient.SqlParameter() { ParameterName = "@file", SqlDbType = System.Data.SqlDbType.VarChar, Value = filename },
 							new System.Data.SqlClient.SqlParameter() { ParameterName = "@vend", SqlDbType = System.Data.SqlDbType.VarChar, Value = vendor },
 							new System.Data.SqlClient.SqlParameter() { ParameterName = "@type", SqlDbType = System.Data.SqlDbType.TinyInt, Value = batchitem }

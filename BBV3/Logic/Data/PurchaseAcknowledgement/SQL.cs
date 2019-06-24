@@ -8,6 +8,47 @@ namespace FormatBBV3.Logic.Data.PurchaseAcknowledgement
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 		private string ActionType { get; set; } = "PurchaseAcknowledgement";
 		private string FileFormat { get; set; } = "BBV3";
+		public bool Successful {private set; get;}
+
+		public SQL
+		(
+			int batchnumber,
+			List<Models.Files.PurchaseAcknowledgement.R02_FileHeader> items02,
+			List<Models.Files.PurchaseAcknowledgement.R11_PurchaseOrderHeader> items11,
+			List<Models.Files.PurchaseAcknowledgement.R21_FreeFormVendor> items21,
+			List<Models.Files.PurchaseAcknowledgement.R40_LineItem> items40,
+			List<Models.Files.PurchaseAcknowledgement.R41_AdditionalDetail> items41,
+			List<Models.Files.PurchaseAcknowledgement.R42_AdditionalLineItem> items42,
+			List<Models.Files.PurchaseAcknowledgement.R43_AdditionalLineItem> items43,
+			List<Models.Files.PurchaseAcknowledgement.R44_Item_NumberOrPrice> items44,
+			List<Models.Files.PurchaseAcknowledgement.R45_AdditionalLineItem> items45,
+			List<Models.Files.PurchaseAcknowledgement.R59_PurchaseOrderControlTotals> items59,
+			List<Models.Files.PurchaseAcknowledgement.R91_FileTrailer> items91
+		)
+		{
+			bool result = false;
+			try
+			{
+				if (items02 != null && items02.Count > 0) { SaveR02_FileHeader(items02, batchnumber); }
+				if (items11 != null && items11.Count > 0) { SaveR11_PurchaseOrderHeader(items11, batchnumber); }
+				if (items21 != null && items21.Count > 0) { SaveR21_FreeFormVendor(items21, batchnumber); }
+				if (items40 != null && items40.Count > 0) { SaveR40_LineItem(items40, batchnumber); }
+				if (items41 != null && items41.Count > 0) { SaveR41_AdditionalDetail(items41, batchnumber); }
+				if (items42 != null && items42.Count > 0) { SaveR42_AdditionalLineItem(items42, batchnumber); }
+				if (items43 != null && items43.Count > 0) { SaveR43_AdditionalLineItem(items43, batchnumber); }
+				if (items44 != null && items44.Count > 0) { SaveR44_ItemNumberOrPrice(items44, batchnumber); }
+				if (items45 != null && items45.Count > 0) { SaveR45_AdditionalLineItem(items45, batchnumber); }
+				if (items59 != null && items59.Count > 0) { SaveR59_PurchaseOrderControlTotals(items59, batchnumber); }
+				if (items91 != null && items91.Count > 0) { SaveR91_FileTrailer(items91, batchnumber); }
+				result = true;
+			}
+			catch (Exception ex)
+			{
+				log.Error(ex);
+				result = false;
+			}
+			Successful= result;
+		}
 
 		public bool SaveR02_FileHeader(List<Models.Files.PurchaseAcknowledgement.R02_FileHeader> items, int batchnumber)
 		{

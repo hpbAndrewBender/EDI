@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FormatBBV3.Enumerations;
+using Bulk = DataHPBEDI.Models.BLK;
+using Direct = DataHPBEDI.Models.CDF;
 
 namespace VendorIngramContent.Logic.PurchaseOrder
 {
@@ -44,7 +46,7 @@ namespace VendorIngramContent.Logic.PurchaseOrder
 			return result;
 		}
 
-		public (bool status, string file) BBV3(string directory, string extension, string vendor, List<string> excludeoptionals, (DataHPBEDI.Models.EDI.PurchaseOrder.Header header, List<DataHPBEDI.Models.EDI.PurchaseOrder.Detail> details) purchaseorder)
+		public (bool status, string file) BBV3(string directory, string extension, string vendor, List<string> excludeoptionals, (Bulk.PurchaseOrder.Header header, List<Bulk.PurchaseOrder.Detail> details) purchaseorder)
 		{
 			bool success = false;
 			string outputfilename = string.Empty;
@@ -64,7 +66,7 @@ namespace VendorIngramContent.Logic.PurchaseOrder
 					VendorStore = meta.VendorStoreData(vendor, new List<string> { purchaseorder.header.ShipToLoc } ).ToList();
 				}
 				List < FormatBBV3.Models.Files.PurchaseOrder.DataSequence.PurchaseOrderDetail > items = new List<FormatBBV3.Models.Files.PurchaseOrder.DataSequence.PurchaseOrderDetail>();
-				foreach (DataHPBEDI.Models.EDI.PurchaseOrder.Detail detail in purchaseorder.details.OrderBy(f => f.LineNo))
+				foreach (Bulk.PurchaseOrder.Detail detail in purchaseorder.details.OrderBy(f => f.LineNo))
 				{
 					items.Add
 					(
@@ -199,7 +201,7 @@ namespace VendorIngramContent.Logic.PurchaseOrder
 			return(success, outputfilename);
 		}
 
-		public (bool status, string file) CDFL(string directory, string extension, string vendor, (DataHPBEDI.Models.EDI.PurchaseOrder.Header header, List<DataHPBEDI.Models.EDI.PurchaseOrder.Detail> details) purchaseorder)
+		public (bool status, string file) CDFL(string directory, string extension, string vendor, (Direct.PurchaseOrder.Header header, List<Direct.PurchaseOrder.Detail> details) purchaseorder)
 		{
 			bool success = false;
 			string outputfilename = string.Empty;
@@ -219,7 +221,7 @@ namespace VendorIngramContent.Logic.PurchaseOrder
 					VendorStore = meta.VendorStoreData(vendor, new List<string> { purchaseorder.header.ShipToLoc }).ToList();
 				}
 				//?? List<FormatCDFL.Models.Files.PurchaseOrder.DataSequence.PurchaseOrderDetail> items = new List<FormatCDFL.Models.Files.PurchaseOrder.DataSequence.PurchaseOrderDetail>();
-				foreach (DataHPBEDI.Models.EDI.PurchaseOrder.Detail detail in purchaseorder.details.OrderBy(f => f.LineNo))
+				foreach (Direct.PurchaseOrder.Detail detail in purchaseorder.details.OrderBy(f => f.LineNo))
 				{
 					//?? items.Add
 					//?? (

@@ -13,7 +13,7 @@ namespace DataHPBEDI.Logic.EDI
 	{
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
-		public bool Invoice(List<(Models.EDI.Invoice.Header header, List<Models.EDI.Invoice.Detail> details)> invoices, byte version)
+		public bool Invoice(List<(Models.BLK.Invoice.Header header, List<Models.BLK.Invoice.Detail> details)> invoices, byte version)
 		{
 			bool result = false;
 			bool returnresult = false;
@@ -38,7 +38,7 @@ namespace DataHPBEDI.Logic.EDI
 
 			try
 			{
-				foreach ((Models.EDI.Invoice.Header header, List<Models.EDI.Invoice.Detail> detail) in invoices)
+				foreach ((Models.BLK.Invoice.Header header, List<Models.BLK.Invoice.Detail> detail) in invoices)
 				{
 					using (CommonLib.SQL.Access data = new Access())
 					{
@@ -47,7 +47,7 @@ namespace DataHPBEDI.Logic.EDI
 							Tools.dbConn[$"EDI-{Globals.Env}"],
 							new List<string>()
 							{
-								"EDI.uspInvoice_Insert"
+								"BLK.uspInvoice_Insert"
 							},
 							new List<SqlParameter>()
 							{
@@ -55,13 +55,13 @@ namespace DataHPBEDI.Logic.EDI
 								{
 									ParameterName = "@header",
 									SqlDbType = SqlDbType.Structured,
-									Value = (new List<Models.EDI.Invoice.Header> { header }).ToDataTable<Models.EDI.Invoice.Header>("TypeInvoiceHeader", invoiceignores)
+									Value = (new List<Models.BLK.Invoice.Header> { header }).ToDataTable<Models.BLK.Invoice.Header>("TypeInvoiceHeader", invoiceignores)
 								},
 								new SqlParameter()
 								{
 									ParameterName = "@detail",
 									SqlDbType = SqlDbType.Structured,
-									Value = detail.ToDataTable<Models.EDI.Invoice.Detail>("TypeInvoiceDetail", invoiceignores)
+									Value = detail.ToDataTable<Models.BLK.Invoice.Detail>("TypeInvoiceDetail", invoiceignores)
 								},
 								new SqlParameter()
 								{
@@ -84,7 +84,7 @@ namespace DataHPBEDI.Logic.EDI
 			return returnresult;
 		}
 
-		public bool Acknowledge(List<(Models.EDI.Acknowledge.Header header, List<Models.EDI.Acknowledge.Detail> details)> acks, byte version)
+		public bool Acknowledge(List<(Models.BLK.Acknowledge.Header header, List<Models.BLK.Acknowledge.Detail> details)> acks, byte version)
 		{
 			bool result = false;
 			List<string> acknowledgeignores = new List<string>
@@ -110,7 +110,7 @@ namespace DataHPBEDI.Logic.EDI
 
 			try
 			{
-				foreach ((Models.EDI.Acknowledge.Header header, List<Models.EDI.Acknowledge.Detail> detail) in acks)
+				foreach ((Models.BLK.Acknowledge.Header header, List<Models.BLK.Acknowledge.Detail> detail) in acks)
 				{
 					using (CommonLib.SQL.Access data = new Access())
 					{
@@ -119,7 +119,7 @@ namespace DataHPBEDI.Logic.EDI
 							Tools.dbConn[$"EDI-{Globals.Env}"],
 							new List<string>()
 							{
-								"edi.uspAcknowledge_Insert"
+								"BLK.uspAcknowledge_Insert"
 							},
 							new List<SqlParameter>()
 							{
@@ -127,13 +127,13 @@ namespace DataHPBEDI.Logic.EDI
 								{
 									ParameterName = "@header",
 									SqlDbType = SqlDbType.Structured,
-									Value = (new List<Models.EDI.Acknowledge.Header> { header }).ToDataTable<Models.EDI.Acknowledge.Header>("TypeAcknowledgeHeader",acknowledgeignores)
+									Value = (new List<Models.BLK.Acknowledge.Header> { header }).ToDataTable<Models.BLK.Acknowledge.Header>("TypeAcknowledgeHeader",acknowledgeignores)
 								},
 								new SqlParameter()
 								{
 									ParameterName = "@detail",
 									SqlDbType = SqlDbType.Structured,
-									Value = detail.ToDataTable<Models.EDI.Acknowledge.Detail>("TypeAcknowledgeDetail",acknowledgeignores)
+									Value = detail.ToDataTable<Models.BLK.Acknowledge.Detail>("TypeAcknowledgeDetail",acknowledgeignores)
 								},
 								new SqlParameter()
 								{
@@ -155,7 +155,7 @@ namespace DataHPBEDI.Logic.EDI
 			return result;
 		}
 
-		public bool Shipment(List<(Models.EDI.Shipment.Header header, List<Models.EDI.Shipment.Detail> details)> ships, byte version)
+		public bool Shipment(List<(Models.BLK.Shipment.Header header, List<Models.BLK.Shipment.Detail> details)> ships, byte version)
 		{
 			bool result = false;
 			List<string> shipmentignores = new List<string>
@@ -166,7 +166,7 @@ namespace DataHPBEDI.Logic.EDI
 
 			try
 			{
-				foreach ((Models.EDI.Shipment.Header header, List<Models.EDI.Shipment.Detail> detail) in ships)
+				foreach ((Models.BLK.Shipment.Header header, List<Models.BLK.Shipment.Detail> detail) in ships)
 				{
 					using (CommonLib.SQL.Access data = new Access())
 					{
@@ -175,7 +175,7 @@ namespace DataHPBEDI.Logic.EDI
 							Tools.dbConn[$"EDI-{Globals.Env}"],
 							new List<string>()
 							{
-								"edi.uspShipment_Insert"
+								"BLK.uspShipment_Insert"
 							},
 							new List<SqlParameter>()
 							{
@@ -183,13 +183,13 @@ namespace DataHPBEDI.Logic.EDI
 								{
 									ParameterName = "@header",
 									SqlDbType = SqlDbType.Structured,
-									Value = (new List<Models.EDI.Shipment.Header> { header }).ToDataTable("TypeShipmentHeader", shipmentignores)
+									Value = (new List<Models.BLK.Shipment.Header> { header }).ToDataTable("TypeShipmentHeader", shipmentignores)
 								},
 								new SqlParameter()
 								{
 									ParameterName = "@detail",
 									SqlDbType = SqlDbType.Structured,
-									Value = detail.ToDataTable<Models.EDI.Shipment.Detail>("TypeShipmentDetail", shipmentignores)
+									Value = detail.ToDataTable<Models.BLK.Shipment.Detail>("TypeShipmentDetail", shipmentignores)
 								},
 								new SqlParameter()
 								{

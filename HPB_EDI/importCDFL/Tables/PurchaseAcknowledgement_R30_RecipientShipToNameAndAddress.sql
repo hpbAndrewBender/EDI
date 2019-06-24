@@ -1,11 +1,14 @@
 ﻿CREATE TABLE [importCDFL].[PurchaseAcknowledgement_R30_RecipientShipToNameAndAddress] (
     [Id]             INT          IDENTITY (1, 1) NOT NULL,
+    [BatchId]        INT          NULL,
     [RecordCode]     TINYINT      NOT NULL,
     [SequenceNumber] SMALLINT     NOT NULL,
     [PONumber]       VARCHAR (22) NOT NULL,
     [RecipientName]  VARCHAR (35) NOT NULL,
     CONSTRAINT [PK_PurchaseAcknowledgement_R30_RecipientShipToNameAndAddress] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

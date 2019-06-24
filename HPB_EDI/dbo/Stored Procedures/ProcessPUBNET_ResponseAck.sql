@@ -53,10 +53,13 @@ select distinct h.AckID,h.PONumber,v.ParentFolder,
 		+CHAR(13) + CHAR(10)
 		+'IEA*1*'+RIGHT('0000000000'+h.PONumber,9)+'~')),1)
 		end [FileText]
-from HPB_EDI..[855_Ack_Hdr] h with(nolock) inner join HPB_EDI..[855_Ack_Dtl] d with(nolock) on h.AckID=d.AckID
-		inner join HPB_EDI..Vendor_SAN_Codes v with(nolock) on h.VendorID=v.VendorID
-where h.ResponseACKSent=0 and v.processor='PUBNET' and h.VendorID in (select VendorID from HPB_EDI..Vendor_SAN_Codes where ACK997=1)
-
-
+from [855_Ack_Hdr] h with(nolock) 
+	inner join [855_Ack_Dtl] d with(nolock) 
+		on h.AckID=d.AckID
+	inner join Vendor_SAN_Codes v with(nolock) 
+		on h.VendorID=v.VendorID
+where h.ResponseACKSent=0 
+	and v.processor='PUBNET' 
+	and h.VendorID in (select VendorID from Vendor_SAN_Codes where ACK997=1)
 END
 

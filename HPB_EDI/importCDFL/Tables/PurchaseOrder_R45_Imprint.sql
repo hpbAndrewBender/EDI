@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [importCDFL].[PurchaseOrder_R45_Imprint] (
     [Id]                    INT          IDENTITY (1, 1) NOT NULL,
+    [BatchId]               INT          NULL,
     [RecordCode]            TINYINT      NOT NULL,
     [SequenceNumber]        SMALLINT     NOT NULL,
     [PONumber]              VARCHAR (22) NOT NULL,
@@ -11,6 +12,8 @@
     [ImprintAppendCode]     CHAR (1)     NULL,
     CONSTRAINT [PK_PurchaseOrder_R45_Imprint] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

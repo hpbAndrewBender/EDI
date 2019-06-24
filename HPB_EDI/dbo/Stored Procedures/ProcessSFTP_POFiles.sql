@@ -37,8 +37,8 @@ BEGIN
 	create table #vends (RowID int identity(1,1) ,VendorID varchar(20))
 	insert into #vends
 	select distinct h.VendorID
-	from HPB_EDI..[850_PO_Hdr] h with(nolock) inner join HPB_EDI..[850_PO_Dtl] d with(nolock) on h.OrdID=d.OrdID
-		inner join HPB_EDI..Vendor_SAN_Codes v with(nolock) on h.VendorID=v.VendorID
+	from [850_PO_Hdr] h with(nolock) inner join [850_PO_Dtl] d with(nolock) on h.OrdID=d.OrdID
+		inner join Vendor_SAN_Codes v with(nolock) on h.VendorID=v.VendorID
 	where h.Processed=0 and v.processor='SFTP'  
 
 	declare @vendcnt int, @curloop int
@@ -111,12 +111,12 @@ BEGIN
 			+'IEA*1*'+case when h.ShipFromSAN in ('8600023') then right('000000000'+cast(datepart(dy, getdate()) as varchar(5)) + cast(h.PONumber as varchar(10)),9) 
 				else RIGHT('0000000000'+h.PONumber,9) end +'~')),1)
 			end [FileText]
-		from HPB_EDI..[850_PO_Hdr] h with(nolock) inner join HPB_EDI..[850_PO_Dtl] d with(nolock) on h.OrdID=d.OrdID
-			inner join HPB_EDI..Vendor_SAN_Codes v with(nolock) on h.VendorID=v.VendorID
+		from [850_PO_Hdr] h with(nolock) inner join [850_PO_Dtl] d with(nolock) on h.OrdID=d.OrdID
+			inner join Vendor_SAN_Codes v with(nolock) on h.VendorID=v.VendorID
 		where h.Processed=0 and v.processor='SFTP' and h.VendorID=@curVend and h.PONumber not in (select distinct PONumber from #ords)
 
 		----update next
-		if (select count(distinct POnumber) from HPB_EDI..[850_PO_Hdr] where Processed=0 and VendorID=@curVend and ProcessedDateTime is not null and PONumber not in (select distinct PONumber from #ords))=0
+		if (select count(distinct POnumber) from [850_PO_Hdr] where Processed=0 and VendorID=@curVend and ProcessedDateTime is not null and PONumber not in (select distinct PONumber from #ords))=0
 			begin
 				set @curloop = @curloop+1
 			end

@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [importCDFL].[PurchaseAcknowledgement_R44_ItemNumberOrPrice] (
     [Id]                  INT            IDENTITY (1, 1) NOT NULL,
+    [BatchId]             INT            NULL,
     [RecordCode]          TINYINT        NOT NULL,
     [SequenceNumber]      SMALLINT       NOT NULL,
     [PONumber]            VARCHAR (22)   NOT NULL,
@@ -9,6 +10,8 @@
     [TotalLineOrderQty]   SMALLINT       NOT NULL,
     CONSTRAINT [PK_PurchaseAcknowledgement_R44_ItemNumberOrPrice] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

@@ -76,10 +76,10 @@ AS
 
 	INSERT INTO #vends (VendorID, VendProcessed)
 		SELECT h.VendorID, 0
-		FROM HPB_EDI.dbo.[850_PO_Hdr] h
-			INNER JOIN HPB_EDI.dbo.[850_PO_Dtl] d
+		FROM [850_PO_Hdr] h
+			INNER JOIN [850_PO_Dtl] d
 				ON h.OrdID=d.OrdID
-			INNER JOIN HPB_EDI.dbo.Vendor_SAN_Codes v
+			INNER JOIN Vendor_SAN_Codes v
 				ON h.VendorID=v.VendorID
 					AND v.Processor ='SFTP'
 		WHERE h.Processed=0
@@ -89,10 +89,10 @@ AS
 						 ,PODetails,TotalLines,TotalQty)
 		SELECT	 v.[Binary],v.VendorID,v.EDIVersion,h.PONumber,v.ParentFolder,h.ShipFromSAN,h.IssueDate,h.InsertDateTime,h.BillToSAN,h.ShipToSAN
 				,dbo.EDIfn_GetPODetails(h.PONumber),h.TotalLines,h.TotalLines
-		FROM HPB_EDI.dbo.[850_PO_Hdr] h 
-			INNER JOIN HPB_EDI.dbo.[850_PO_Dtl] d 
+		FROM [850_PO_Hdr] h 
+			INNER JOIN [850_PO_Dtl] d 
 				ON h.OrdID=d.OrdID
-			INNER JOIN HPB_EDI.dbo.Vendor_SAN_Codes v 
+			INNER JOIN Vendor_SAN_Codes v 
 				ON h.VendorID=v.VendorID
 					AND v.Processor='SFTP'
 		WHERE h.Processed=0 

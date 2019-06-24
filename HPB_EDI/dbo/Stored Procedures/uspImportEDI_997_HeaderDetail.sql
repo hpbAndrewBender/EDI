@@ -15,9 +15,9 @@ BEGIN
 		from (	SELECT DISTINCT EDIFileId
 				FROM  vuImportEDI_Unprocessed_TransactionRanges
 				WHERE EDIType = '997') segs
-			INNER JOIN importEDI_ISA isa
+			INNER JOIN [importX12].[TagISA] isa
 				ON isa.EDIFileId = segs.EDIFileId
-			INNER JOIN importEDI_GS gs
+			INNER JOIN [importX12].[TagGS] gs
 				ON gs.EDIFileId = segs.EDIFileId
 
 	SELECT * FROM @AppCodes
@@ -28,10 +28,10 @@ BEGIN
 			,ak4.*
 			,ak5.*
 			,ak9.*
-	FROM importEDI_AK1 ak1
+	FROM [importX12].[TagAK1] ak1
 		INNER JOIN vuImportEDI_Unprocessed_TransactionRanges segs
 			ON ak1.EDIFileID = segs.EDIFileId
-		LEFT JOIN importEDI_AK2 ak2
+		LEFT JOIN [importX12].[TagAK2] ak2
 			ON ak2.EDIFileID = ak1.EDIFileID
 				AND ak2.ControlNumberGroup = ak1.ControlNumberGroup
 				AND ak2.ControlNumberTransaction = ak2.ControlNumberTransaction
@@ -39,7 +39,7 @@ BEGIN
 					AND ak2.LineNumber between segs.RangeStart+1 AND segs.RangeEnd-1
 					AND ak2.LineNumber > ak1.LineNumber
 					AND ak2.LineNumber - ak1.LineNumber >= 1)
-		LEFT JOIN importEDI_AK3 ak3
+		LEFT JOIN [importX12].[TagAK3] ak3
 			ON ak3.EDIFileID = ak1.EDIFileID
 				AND ak3.ControlNumberGroup = ak1.ControlNumberGroup
 				AND ak3.ControlNumberTransaction = ak2.ControlNumberTransaction
@@ -47,7 +47,7 @@ BEGIN
 					AND ak3.LineNumber between segs.RangeStart+1 AND segs.RangeEnd-1
 					AND ak3.LineNumber > COALESCE(ak2.LineNumber, ak1.LineNumber)
 					AND ak3.LineNumber - COALESCE(ak2.LineNumber, ak1.LineNumber) >= 1)
-		LEFT JOIN importEDI_AK4 ak4
+		LEFT JOIN [importX12].[TagAK4] ak4
 			ON ak4.EDIFileID = ak1.EDIFileID
 				AND ak4.ControlNumberGroup = ak1.ControlNumberGroup
 				AND ak4.ControlNumberTransaction = ak2.ControlNumberTransaction
@@ -55,7 +55,7 @@ BEGIN
 					AND ak4.LineNumber between segs.RangeStart+1 AND segs.RangeEnd-1
 					AND ak4.LineNumber > COALESCE(ak3.LineNumber, ak2.LineNumber, ak1.LineNumber)
 					AND ak4.LineNumber - COALESCE(ak3.LineNumber, ak2.LineNumber, ak1.LineNumber) >= 1)
-		LEFT JOIN importEDI_AK5 ak5
+		LEFT JOIN [importX12].[TagAK5] ak5
 			ON ak5.EDIFileID = ak1.EDIFileID
 				AND ak5.ControlNumberGroup = ak1.ControlNumberGroup
 				AND ak5.ControlNumberTransaction = ak2.ControlNumberTransaction
@@ -63,7 +63,7 @@ BEGIN
 					AND ak5.LineNumber between segs.RangeStart+1 AND segs.RangeEnd-1
 					AND ak5.LineNumber > COALESCE(ak4.LineNumber, ak3.LineNumber, ak2.LineNumber, ak1.LineNumber)
 					AND ak5.LineNumber - COALESCE(ak4.LineNumber, ak3.LineNumber, ak2.LineNumber, ak1.LineNumber) >= 1)
-		LEFT JOIN importEDI_AK9 ak9
+		LEFT JOIN [importX12].[TagAK9] ak9
 			ON ak9.EDIFileID = ak1.EDIFileID
 				AND ak9.ControlNumberGroup = ak1.ControlNumberGroup
 				AND ak9.ControlNumberTransaction = ak2.ControlNumberTransaction

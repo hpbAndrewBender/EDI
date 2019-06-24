@@ -8,6 +8,43 @@ namespace FormatBBV3.Logic.Data.Invoice
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 		private string ActionType { get; set; } = "Invoice";
 		private string FileFormat { get; set; } = "BBV3";
+		public bool Successful { private set; get; }
+
+		public SQL
+		(
+			int batchnumber,
+			List<Models.Files.Invoice.R01_InvoiceFileHeader> items01,
+			List<Models.Files.Invoice.R15_InvoiceHeader> items15,
+			List<Models.Files.Invoice.R16_InvoiceVendorDetail> items16,
+			List<Models.Files.Invoice.R45_InvoiceDetail> items45,
+			List<Models.Files.Invoice.R46_DetailISBN13OrEAN> items46,
+			List<Models.Files.Invoice.R48_DetailTotal> items48,
+			List<Models.Files.Invoice.R55_InvoiceTotals> items55,
+			List<Models.Files.Invoice.R57_InvoiceTrailer> items57,
+			List<Models.Files.Invoice.R95_InvoiceFileTrailer> items95
+		)
+		{
+			bool result = false;
+			try
+			{
+				if (items01 != null && items01.Count > 0) { SaveR01_InvoiceFileHeader(items01, batchnumber); }
+				if (items15 != null && items15.Count > 0) { SaveR15_InvoiceHeader(items15,batchnumber);}
+				if (items16 != null && items16.Count > 0) { SaveR16_InvoiceVendorDetail(items16, batchnumber);}
+				if (items45 != null && items45.Count > 0) { SaveR45_InvoiceDetail(items45, batchnumber);}
+				if (items46 != null && items46.Count > 0) { SaveR46_DetailISBN13EAN(items46, batchnumber);}
+				if (items48 != null && items48.Count > 0) { SaveR48_DetailTotal(items48, batchnumber);}
+				if (items55 != null && items55.Count > 0) { SaveR55_InvoiceTotals(items55, batchnumber);}
+				if (items95 != null && items95.Count > 0) { SaveR57_InvoiceTrailer(items57, batchnumber);}
+				if (items57 != null && items57.Count > 0) { SaveR95_InvoiceFileTrailer(items95, batchnumber); }
+				result = true;
+			}
+			catch (Exception ex)
+			{
+				log.Error(ex);
+				result = false;
+			}
+			Successful = result;
+		}
 
 		public bool SaveR01_InvoiceFileHeader(List<Models.Files.Invoice.R01_InvoiceFileHeader> items, int batchnumber)
 		{

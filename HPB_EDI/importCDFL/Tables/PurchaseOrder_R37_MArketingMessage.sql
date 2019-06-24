@@ -1,11 +1,14 @@
 ﻿CREATE TABLE [importCDFL].[PurchaseOrder_R37_MArketingMessage] (
     [Id]               INT          IDENTITY (1, 1) NOT NULL,
+    [BatchId]          INT          NULL,
     [RecordCode]       TINYINT      NOT NULL,
     [SequenceNumber]   SMALLINT     NOT NULL,
     [PONumber]         VARCHAR (22) NOT NULL,
     [MarketingMessage] VARCHAR (51) NOT NULL,
     CONSTRAINT [PK_PurchaseOrder_R37_MArketingMessage] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

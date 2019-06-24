@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using CommonLib.Extensions;
 using FormatBBV3.Enumerations;
+using Bulk = DataHPBEDI.Models.BLK;
+using Direct = DataHPBEDI.Models.CDF;
 
 namespace VendorIngramContent.Logic.PurchaseAcknowledgement
 {
@@ -11,13 +13,13 @@ namespace VendorIngramContent.Logic.PurchaseAcknowledgement
 	{
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
-		public List<(DataHPBEDI.Models.EDI.Acknowledge.Header header, List<DataHPBEDI.Models.EDI.Acknowledge.Detail> details)> BBV3(string fullpathandname, string vendor)
+		public List<(Bulk.Acknowledge.Header header, List<Bulk.Acknowledge.Detail> details)> BBV3(string fullpathandname, string vendor)
 		{
-			DataHPBEDI.Models.EDI.Acknowledge.Header header = null;
-			DataHPBEDI.Models.EDI.Acknowledge.Detail detail = null;
-			List<DataHPBEDI.Models.EDI.Acknowledge.Detail> details = new List<DataHPBEDI.Models.EDI.Acknowledge.Detail>();
+			Bulk.Acknowledge.Header header = null;
+			Bulk.Acknowledge.Detail detail = null;
+			List<Bulk.Acknowledge.Detail> details = new List<Bulk.Acknowledge.Detail>();
 			FormatBBV3.Models.Files.PurchaseAcknowledgement.DataSequence.V3 ackBBV3 = new FormatBBV3.Models.Files.PurchaseAcknowledgement.DataSequence.V3();
-			List<(DataHPBEDI.Models.EDI.Acknowledge.Header header, List<DataHPBEDI.Models.EDI.Acknowledge.Detail>)> acks = new List<(DataHPBEDI.Models.EDI.Acknowledge.Header header, List<DataHPBEDI.Models.EDI.Acknowledge.Detail>)>();
+			List<(Bulk.Acknowledge.Header header, List<Bulk.Acknowledge.Detail>)> acks = new List<(Bulk.Acknowledge.Header header, List<Bulk.Acknowledge.Detail>)>();
 			StringBuilder multimessage = new StringBuilder();
 			List<(string PONumber, string Message)> VendorMessages = new List<(string PONumber, string Message)>();
 			//++ List<string> storelist = new List<string>();
@@ -33,8 +35,8 @@ namespace VendorIngramContent.Logic.PurchaseAcknowledgement
 				var orderPOs = (from order in items select order.LineItemRecord.PONumber).Distinct().ToList();				
 				for (int ordercounter = 0; ordercounter < orderPOs.Count; ordercounter++)
 				{					
-					details = new List<DataHPBEDI.Models.EDI.Acknowledge.Detail>();
-					header = new DataHPBEDI.Models.EDI.Acknowledge.Header
+					details = new List<Bulk.Acknowledge.Detail>();
+					header = new Bulk.Acknowledge.Header
 					{
 						// AckId = 0,
 						BillToLoc = "",
@@ -63,7 +65,7 @@ namespace VendorIngramContent.Logic.PurchaseAcknowledgement
 					{
 						if (item.LineItemRecord.PONumber == orderPOs[ordercounter])
 						{
-							detail = new DataHPBEDI.Models.EDI.Acknowledge.Detail
+							detail = new Bulk.Acknowledge.Detail
 							{
 								// AckId = ,
 								// AckItemId = ,
@@ -175,13 +177,13 @@ namespace VendorIngramContent.Logic.PurchaseAcknowledgement
 			return acks;
 		}
 
-		public List<(DataHPBEDI.Models.EDI.Acknowledge.Header header, List<DataHPBEDI.Models.EDI.Acknowledge.Detail> details)> CDFL(string fullpathandname, string vendor)
+		public List<(Direct.Acknowledge.Header header, List<Direct.Acknowledge.Detail> details)> CDFL(string fullpathandname, string vendor)
 		{
-			DataHPBEDI.Models.EDI.Acknowledge.Header header = null;
-			DataHPBEDI.Models.EDI.Acknowledge.Detail detail = null;
-			List<DataHPBEDI.Models.EDI.Acknowledge.Detail> details = new List<DataHPBEDI.Models.EDI.Acknowledge.Detail>();
+			Direct.Acknowledge.Header header = null;
+			Direct.Acknowledge.Detail detail = null;
+			List<Direct.Acknowledge.Detail> details = new List<Direct.Acknowledge.Detail>();
 			FormatCDFL.Models.Files.PurchaseAcknowledgement.DataSequence.V3 ackCDFL = new FormatCDFL.Models.Files.PurchaseAcknowledgement.DataSequence.V3();
-			List<(DataHPBEDI.Models.EDI.Acknowledge.Header header, List<DataHPBEDI.Models.EDI.Acknowledge.Detail>)> acks = new List<(DataHPBEDI.Models.EDI.Acknowledge.Header header, List<DataHPBEDI.Models.EDI.Acknowledge.Detail>)>();
+			List<(Direct.Acknowledge.Header header, List<Direct.Acknowledge.Detail>)> acks = new List<(Direct.Acknowledge.Header header, List<Direct.Acknowledge.Detail>)>();
 			StringBuilder multimessage = new StringBuilder();
 			List<(string PONumber, string Message)> VendorMessages = new List<(string PONumber, string Message)>();
 			//++ List<string> storelist = new List<string>();

@@ -6,12 +6,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Logic\EDI\**" />
+    <Compile Remove="Models\EDI\**" />
     <Compile Remove="Models\X12_3060\**" />
+    <EmbeddedResource Remove="Logic\EDI\**" />
+    <EmbeddedResource Remove="Models\EDI\**" />
     <EmbeddedResource Remove="Models\X12_3060\**" />
+    <None Remove="Logic\EDI\**" />
+    <None Remove="Models\EDI\**" />
     <None Remove="Models\X12_3060\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Models\EDI\Transactions\SourceType.cs" />
+    <Compile Include="Models\EDI\Transactions\ProcessLog.cs" />
+    <Compile Include="Models\EDI\Transactions\ProcessTransaction.cs" />
+    <Compile Include="Models\EDI\Transactions\SourceLocation.cs" />
+    <Compile Include="Models\EDI\Transactions\Transactions.cs" />
     <Compile Include="Models\X12_3060\MetaCodes.cs" />
     <Compile Include="Models\X12_3060\MetaData.cs" />
   </ItemGroup>
@@ -25,6 +36,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IO\CommonLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Logic\CDF\" />
   </ItemGroup>
 
 </Project>

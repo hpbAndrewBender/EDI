@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 
 namespace FormatCDFL.Logic.Data.ShipNotice
-{
-	public class SQL
+{ 
+	public class SQL : IDisposable
 	{
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 		private string ActionType { get; set; } = "ShipNotice";
 		private string FileFormat { get; set; } = "CDFL";
+		public bool Successful { private set; get; }
 
-		public bool Save
+		public SQL
 		(
 			int batchnumber,
 			List<Models.Files.ShipNotice.CR_CompanyRecord> itemscr,
@@ -17,20 +18,20 @@ namespace FormatCDFL.Logic.Data.ShipNotice
 			List<Models.Files.ShipNotice.OR_OrderRecord> itemsor
 		)
 		{
-			bool success = false;
+			bool result = false;
 			try
 			{
 				if (itemscr != null && itemscr.Count > 0) { SaveCR_CompanyRecord(itemscr, batchnumber); }
 				if (itemsod != null && itemsod.Count > 0) { SaveOD_OrderDetailRecord(itemsod, batchnumber); }
 				if (itemsor != null && itemsor.Count > 0) { SaveOR_OrderRecord(itemsor, batchnumber); }
-				success = true;
+				result = true;
 			}
 			catch (Exception ex)
 			{
 				log.Error(ex);
-				success = false;
+				result = false;
 			}
-			return success;
+			Successful =  result;
 		}
 
 		public bool SaveCR_CompanyRecord(List<Models.Files.ShipNotice.CR_CompanyRecord> items, int batchnumber)
@@ -146,5 +147,40 @@ namespace FormatCDFL.Logic.Data.ShipNotice
 			}
 			return result;
 		}
+
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					// TODO: dispose managed state (managed objects).
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+				// TODO: set large fields to null.
+
+				disposedValue = true;
+			}
+		}
+
+		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+		// ~SQL() {
+		//   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+		//   Dispose(false);
+		// }
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+			// TODO: uncomment the following line if the finalizer is overridden above.
+			// GC.SuppressFinalize(this);
+		}
+		#endregion
 	}
 }

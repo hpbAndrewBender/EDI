@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [importCDFL].[ShipNotice_OD_OrderDetailRecord] (
     [Id]                                          INT            IDENTITY (1, 1) NOT NULL,
+    [BatchId]                                     INT            NULL,
     [OrderRecordIdentifier]                       VARCHAR (2)    NOT NULL,
     [ClientOrderID]                               VARCHAR (22)   NOT NULL,
     [ShippingWarehouseCode]                       VARCHAR (2)    NOT NULL,
@@ -22,6 +23,8 @@
     [ISBN13OrEAN]                                 VARCHAR (15)   NOT NULL,
     CONSTRAINT [PK_ShipNotice_OD_OrderDetailRecord ] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

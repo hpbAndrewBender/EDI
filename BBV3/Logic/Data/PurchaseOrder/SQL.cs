@@ -8,6 +8,47 @@ namespace FormatBBV3.Logic.Data.PurchaseOrder
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 		private string ActionType { get; set; } = "PurchaseOrder";
 		private string FileFormat { get; set; } = "BBV3";
+		public bool Successful { private set; get; }
+
+		public SQL
+		(
+			int batchnumber,
+			List<Models.Files.PurchaseOrder.R00_ClientFileHeader> items00,
+			List<Models.Files.PurchaseOrder.R10_ClientHeader> items10,
+			List<Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions> items20,
+			List<Models.Files.PurchaseOrder.R21_PurchaseOrderOptions> items21,
+			List<Models.Files.PurchaseOrder.R40_LineItemDetail> items40,
+			List<Models.Files.PurchaseOrder.R41_AdditionalLineItemDetail> items41,
+			List<Models.Files.PurchaseOrder.R45_Imprint> items45,
+			List<Models.Files.PurchaseOrder.R46_StickerBarcodeData> items46data,
+			List<Models.Files.PurchaseOrder.R46_StickerTextLines> items46text,
+			List<Models.Files.PurchaseOrder.R50_PurchaseOrderTrailer> items50,
+			List<Models.Files.PurchaseOrder.R90_FileTrailer> items90
+		)
+		{
+			bool result = false;
+			try
+			{
+				if (items00 != null && items00.Count > 0) { SaveR00_ClientFileHeader(items00, batchnumber);  }
+				if (items10 != null && items10.Count > 0) { SaveR10_ClientHeader(items10, batchnumber); }
+				if (items20 != null && items20.Count > 0) { SaveR20_FixedSpecialHandlingInstructions(items20, batchnumber); }
+				if (items21 != null && items21.Count > 0) { SaveR21_PurchaseOrderOptions(items21, batchnumber); }
+				if (items40 != null && items40.Count > 0) { SaveR40_LineItemDetail(items40, batchnumber); }
+				if (items41 != null && items41.Count > 0) { SaveR41_AdditionalLineItemDetail(items41, batchnumber); }
+				if (items45 != null && items45.Count > 0) { SaveR45_Imprint(items45, batchnumber); }
+				if (items46data != null && items46data.Count > 0) { SaveR46_StickerBarcode(items46data, batchnumber); }
+				if (items46text != null && items46text.Count > 0) { SaveR46_StickerTextLines(items46text, batchnumber); }
+				if (items50 != null && items50.Count > 0) { SaveR50_PurchaseOrderTrailer(items50, batchnumber); }
+				if (items90 != null && items90.Count > 0) { SaveR90_FileTrailer(items90, batchnumber); }
+				result = true;
+			}
+			catch (Exception ex)
+			{
+				log.Error(ex);
+				result = false;
+			}
+			Successful= result;
+		}
 
 		public bool SaveR00_ClientFileHeader(List<Models.Files.PurchaseOrder.R00_ClientFileHeader> items, int batchnumber)
 		{

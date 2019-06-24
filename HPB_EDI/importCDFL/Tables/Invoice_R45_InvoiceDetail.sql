@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [importCDFL].[Invoice_R45_InvoiceDetail] (
     [Id]                  INT            IDENTITY (1, 1) NOT NULL,
+    [BatchId]             INT            NULL,
     [DetailRecord]        VARCHAR (2)    NOT NULL,
     [RecordSequence]      SMALLINT       NOT NULL,
     [InvoiceNumber]       VARCHAR (8)    NOT NULL,
@@ -11,6 +12,8 @@
     [MeteredDate]         DATE           NOT NULL,
     CONSTRAINT [PK_Invoice_R45_InvoiceDetail] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

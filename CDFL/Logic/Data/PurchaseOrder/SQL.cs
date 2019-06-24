@@ -4,14 +4,80 @@ using System.Text;
 
 namespace FormatCDFL.Logic.Data.PurchaseOrder
 {
-	public class SQL
+	public class SQL : IDisposable
 	{
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 		private string ActionType { get; set; } = "PurchaseOrder";
 		private string FileFormat { get; set; } = "CDFL";
+		public bool Successful { private set; get; }
 
-		Models.Files.PurchaseOrder.R00_FileHeader x01;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R00_FileHeader> items, int batchnumber)
+		public SQL
+		(
+			int batchnumber,
+			List<Models.Files.PurchaseOrder.R00_FileHeader> items00 ,
+			List<Models.Files.PurchaseOrder.R10_ClientHeader> items10 ,
+			List<Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions> items20 ,
+			List<Models.Files.PurchaseOrder.R21_PurchaseOrderOptions> items21,
+			List<Models.Files.PurchaseOrder.R24_CustomerCost> items24,
+			List<Models.Files.PurchaseOrder.R25_CustomerBillToName> items25,
+			List<Models.Files.PurchaseOrder.R26_CustomerBillToPhoneNumber> items26 ,
+			List<Models.Files.PurchaseOrder.R27_CustomerBillToAddressLine> items27,
+			List<Models.Files.PurchaseOrder.R29_CustomerBillToCityStateZip> items29,
+			List<Models.Files.PurchaseOrder.R30_RecipientShipToName> items30,
+			List<Models.Files.PurchaseOrder.R31_RecipientShipToPhone> items31,
+			List<Models.Files.PurchaseOrder.R32_ShippingRecordRecipientAddressLine> items32,
+			List<Models.Files.PurchaseOrder.R34_RecipientShippingRecordCityStateZip> items34,
+			List<Models.Files.PurchaseOrder.R35_DropShipDetail> items35,
+			List<Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions> items36,
+			List<Models.Files.PurchaseOrder.R37_MarketingMessage> items37,
+			List<Models.Files.PurchaseOrder.R38_GiftMessage> items38,
+			List<Models.Files.PurchaseOrder.R40_LineItem> items40,
+			List<Models.Files.PurchaseOrder.R41_AdditionalLineItem> items41,
+			List<Models.Files.PurchaseOrder.R42_LineItemGiftMessage> items42,
+			List<Models.Files.PurchaseOrder.R45_Imprint> items45,
+			List<Models.Files.PurchaseOrder.R50_PurchaseOrderControl> items50,
+			List<Models.Files.PurchaseOrder.R90_FileTrailer> items90
+		)
+		{
+			bool result = false;
+			try
+			{
+				if(items00 != null && items00.Count > 0) { SaveR00_FileHeader(items00, batchnumber); }
+				if(items10 != null && items10.Count > 0) { SaveR10_ClientHeader(items10,batchnumber); } 			
+				if(items20 != null && items20.Count > 0) { SaveR20_FixedSpecialHandlingInstructions(items20,batchnumber); }
+				if(items21 != null && items21.Count > 0) { SaveR21_PurchaseOrderOptions(items21,batchnumber); }
+				if(items24 != null && items24.Count > 0) { SaveR24_CustomerCost(items24,batchnumber); }
+				if(items25 != null && items25.Count > 0) { SaveR25_CustomerBillToName(items25,batchnumber); }
+				if(items26 != null && items26.Count > 0) { SaveR26_CustomerBillToPhoneNumber(items26,batchnumber); }
+				if(items27 != null && items27.Count > 0) { SaveR27_CustomerBillToAddressLine(items27,batchnumber); }
+				if(items29 != null && items29.Count > 0) { SaveR29_CustomerBillToCityStateZip(items29,batchnumber); }
+				if(items30 != null && items30.Count > 0) { SaveR30_RecipientShipToName(items30,batchnumber); }
+				if(items31 != null && items31.Count > 0) { SaveR31_RecipientShipToPhone(items31,batchnumber); }
+				if(items32 != null && items32.Count > 0) { SaveR32_ShippingRecordRecipientAddressLine(items32,batchnumber); }
+				if(items34 != null && items34.Count > 0) { SaveR34_RecipientShippingRecordCityStateZip(items34,batchnumber); }
+				if(items35 != null && items35.Count > 0) { SaveR35_DropShipDetail(items35,batchnumber); }
+				if(items36 != null && items36.Count > 0) { SaveR36_SpecialDeliveryInstructions(items36,batchnumber); }
+				if(items37 != null && items37.Count > 0) { SaveR37_MarketingMessage(items37,batchnumber); }
+				if(items38 != null && items38.Count > 0) { SaveR38_GiftMessage(items38,batchnumber); }
+				if(items40 != null && items40.Count > 0) { SaveR40_LineItem(items40,batchnumber); }
+				if(items41 != null && items41.Count > 0) { SaveR41_AdditionalLineItem(items41,batchnumber); }
+				if(items42 != null && items42.Count > 0) { SaveR42_LineItemGiftMessage(items42,batchnumber); }
+				if(items45 != null && items45.Count > 0) { SaveR45_Imprint(items45,batchnumber); }
+				if(items50 != null && items50.Count > 0) { SaveR50_PurchaseOrderControl(items50,batchnumber); }
+				if(items90 != null && items90.Count > 0) { SaveR90_FileTrailer(items90,batchnumber); }
+
+
+
+			}
+			catch (Exception ex)
+			{
+				log.Error(ex);
+				result = false;
+			}
+			Successful = result;
+		}
+
+		public bool SaveR00_FileHeader(List<Models.Files.PurchaseOrder.R00_FileHeader> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -46,8 +112,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R10_ClientHeader x02;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R10_ClientHeader> items, int batchnumber)
+		
+		public bool SaveR10_ClientHeader(List<Models.Files.PurchaseOrder.R10_ClientHeader> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -83,8 +149,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions x03;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions> items, int batchnumber)
+		
+		public bool SaveR20_FixedSpecialHandlingInstructions(List<Models.Files.PurchaseOrder.R20_FixedSpecialHandlingInstructions> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -113,8 +179,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R21_PurchaseOrderOptions x04;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R21_PurchaseOrderOptions> items, int batchnumber)
+		
+		public bool SaveR21_PurchaseOrderOptions(List<Models.Files.PurchaseOrder.R21_PurchaseOrderOptions> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -151,8 +217,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R24_CustomerCost x05;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R24_CustomerCost> items, int batchnumber)
+		
+		public bool SaveR24_CustomerCost(List<Models.Files.PurchaseOrder.R24_CustomerCost> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -183,8 +249,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R25_CustomerBillToName x06;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R25_CustomerBillToName> items, int batchnumber)
+		
+		public bool SaveR25_CustomerBillToName(List<Models.Files.PurchaseOrder.R25_CustomerBillToName> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -213,8 +279,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R26_CustomerBillToPhoneNumber x07;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R26_CustomerBillToPhoneNumber> items, int batchnumber)
+		
+		public bool SaveR26_CustomerBillToPhoneNumber(List<Models.Files.PurchaseOrder.R26_CustomerBillToPhoneNumber> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -243,8 +309,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R27_CustomerBillToAddressLine x08;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R27_CustomerBillToAddressLine> items, int batchnumber)
+		
+		public bool SaveR27_CustomerBillToAddressLine(List<Models.Files.PurchaseOrder.R27_CustomerBillToAddressLine> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -273,8 +339,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R29_CustomerBillToCityStateZip x09;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R29_CustomerBillToCityStateZip> items, int batchnumber)
+		
+		public bool SaveR29_CustomerBillToCityStateZip(List<Models.Files.PurchaseOrder.R29_CustomerBillToCityStateZip> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -306,8 +372,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R30_RecipientShipToName x10;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R30_RecipientShipToName> items, int batchnumber)
+		
+		public bool SaveR30_RecipientShipToName(List<Models.Files.PurchaseOrder.R30_RecipientShipToName> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -337,8 +403,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R31_RecipientShipToPhone x11;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R31_RecipientShipToPhone> items, int batchnumber)
+		
+		public bool SaveR31_RecipientShipToPhone(List<Models.Files.PurchaseOrder.R31_RecipientShipToPhone> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -367,8 +433,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R32_ShippingRecordRecipientAddressLine x12;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R32_ShippingRecordRecipientAddressLine> items, int batchnumber)
+		
+		public bool SaveR32_ShippingRecordRecipientAddressLine(List<Models.Files.PurchaseOrder.R32_ShippingRecordRecipientAddressLine> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -397,8 +463,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R34_RecipientShippingRecordCityStateZip x13;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R34_RecipientShippingRecordCityStateZip> items, int batchnumber)
+		
+		public bool SaveR34_RecipientShippingRecordCityStateZip(List<Models.Files.PurchaseOrder.R34_RecipientShippingRecordCityStateZip> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -430,8 +496,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R35_DropShipDetail x14;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R35_DropShipDetail> items, int batchnumber)
+		
+		public bool SaveR35_DropShipDetail(List<Models.Files.PurchaseOrder.R35_DropShipDetail> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -464,8 +530,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions x15;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions> items, int batchnumber)
+		
+		public bool SaveR36_SpecialDeliveryInstructions(List<Models.Files.PurchaseOrder.R36_SpecialDeliveryInstructions> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -494,8 +560,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R37_MarketingMessage x16;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R37_MarketingMessage> items, int batchnumber)
+		
+		public bool SaveR37_MarketingMessage(List<Models.Files.PurchaseOrder.R37_MarketingMessage> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -524,8 +590,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R38_GiftMessage x17;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R38_GiftMessage> items, int batchnumber)
+		
+		public bool SaveR38_GiftMessage(List<Models.Files.PurchaseOrder.R38_GiftMessage> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -554,8 +620,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R40_LineItem x18;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R40_LineItem> items, int batchnumber)
+		
+		public bool SaveR40_LineItem(List<Models.Files.PurchaseOrder.R40_LineItem> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -588,8 +654,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R41_AdditionalLineItem x19;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R41_AdditionalLineItem> items, int batchnumber)
+		
+		public bool SaveR41_AdditionalLineItem(List<Models.Files.PurchaseOrder.R41_AdditionalLineItem> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -622,8 +688,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R42_LineItemGiftMessage x20;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R42_LineItemGiftMessage> items, int batchnumber)
+		
+		public bool SaveR42_LineItemGiftMessage(List<Models.Files.PurchaseOrder.R42_LineItemGiftMessage> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -652,8 +718,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R45_Imprint x21;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R45_Imprint> items, int batchnumber)
+		
+		public bool SaveR45_Imprint(List<Models.Files.PurchaseOrder.R45_Imprint> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -687,8 +753,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R50_PurchaseOrderControl x22;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R50_PurchaseOrderControl> items, int batchnumber)
+		
+		public bool SaveR50_PurchaseOrderControl(List<Models.Files.PurchaseOrder.R50_PurchaseOrderControl> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -719,8 +785,8 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
-		Models.Files.PurchaseOrder.R90_FileTrailer x23;
-		public bool SaveA(List<Models.Files.PurchaseOrder.R90_FileTrailer> items, int batchnumber)
+
+		public bool SaveR90_FileTrailer(List<Models.Files.PurchaseOrder.R90_FileTrailer> items, int batchnumber)
 		{
 			bool result = false;
 
@@ -759,6 +825,41 @@ namespace FormatCDFL.Logic.Data.PurchaseOrder
 			}
 			return result;
 		}
+
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					// TODO: dispose managed state (managed objects).
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+				// TODO: set large fields to null.
+
+				disposedValue = true;
+			}
+		}
+
+		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+		// ~SQL() {
+		//   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+		//   Dispose(false);
+		// }
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+			// TODO: uncomment the following line if the finalizer is overridden above.
+			// GC.SuppressFinalize(this);
+		}
+		#endregion
 
 	}
 }

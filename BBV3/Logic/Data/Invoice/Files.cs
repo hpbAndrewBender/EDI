@@ -3,6 +3,7 @@ using CommonLib.Logic;
 using CommonLib.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FormatBBV3.Logic.Data.Invoice
 {
@@ -14,7 +15,7 @@ namespace FormatBBV3.Logic.Data.Invoice
 			int batchnumber = 0;
 			try
 			{
-				batchnumber = CommonLib.Logic.Globals.CreateBatch(filename, vendor, 4);
+				batchnumber = CommonLib.Logic.Globals.CreateBatch("BBV3", filename, vendor, 4);
 			}
 			catch (Exception ex)
 			{
@@ -26,11 +27,13 @@ namespace FormatBBV3.Logic.Data.Invoice
 		public bool WriteFile(string filename, Models.Files.Invoice.DataSequence.V3 data)
 		{
 			List<object> writelist = new List<object>();
+			List<(string code, Type type)> used = new List<(string code, Type type)>();
 			bool success = false;
 			try
 			{
 				//build list
 				writelist.Add(data.InvoiceFileHeaderRecord);
+				//++if((from u in used where u.code == data.InvoiceFileHeaderRecord.InvoiceFileHeader select u.code).Count() == 0) { used.Add((data.InvoiceFileHeaderRecord.InvoiceFileHeader,typeof(Models.Files.Invoice.R01_InvoiceFileHeader)); }
 				if (data.Invoices != null && data.Invoices.Count > 0)
 				{
 					foreach (Models.Files.Invoice.DataSequence.InvoiceItem item in data.Invoices)
@@ -93,6 +96,7 @@ namespace FormatBBV3.Logic.Data.Invoice
 			string typename = string.Empty;
 			int invoiceCount = 0;
 			int detailCount = 0;
+			bool savedok = false;
 
 			try
 			{
@@ -212,19 +216,7 @@ namespace FormatBBV3.Logic.Data.Invoice
 						file.Invoices.Add(invoice);						
 						invoice = null;
 					}
-					using (SQL sql = new SQL())
-					{
-						// add batch info
-						sql.SaveR01_InvoiceFileHeader(r01, batchnumber);
-						sql.SaveR15_InvoiceHeader(r15, batchnumber);
-						sql.SaveR16_InvoiceVendorDetail(r16, batchnumber);
-						sql.SaveR45_InvoiceDetail(r45, batchnumber);
-						sql.SaveR46_DetailISBN13EAN(r46, batchnumber);
-						sql.SaveR48_DetailTotal(r48, batchnumber);
-						sql.SaveR55_InvoiceTotals(r55, batchnumber);
-						sql.SaveR57_InvoiceTrailer(r57, batchnumber);
-						sql.SaveR95_InvoiceFileTrailer(r95, batchnumber);
-					}
+					using (SQL sql = new SQL(batchnumber, r01, r15, r16, r45, r46, r48, r55, r57, r95)) { savedok = sql.Successful; }
 				}
 			}
 			catch (Exception ex)

@@ -8,8 +8,9 @@ namespace FormatCDFL.Logic.Data.Invoice
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 		private string ActionType { get; set; } = "Invoice";
 		private string FileFormat { get; set; } = "CDFL";
+		public bool Successful { private set; get; }
 
-		public bool Save
+		public SQL
 		(
 			int batchnumber,
 			List<Models.Files.Invoice.R01_InvoiceFileHeader> items01,
@@ -23,7 +24,7 @@ namespace FormatCDFL.Logic.Data.Invoice
 			List<Models.Files.Invoice.R95_InvoiceFileTrailer> items95
 		)
 		{
-			bool success = false;
+			bool result = false;
 			try
 			{
 				if (items01 != null && items01.Count > 0) { SaveR01_InvoiceFileHeader(items01, batchnumber); }
@@ -35,14 +36,14 @@ namespace FormatCDFL.Logic.Data.Invoice
 				if (items55 != null && items01.Count > 0) { SaveR55_InvoiceTotals(items55, batchnumber); }
 				if (items57 != null && items01.Count > 0) { SaveR57_InvoiceTrailer(items57, batchnumber); }
 				if (items95 != null && items95.Count > 0) { SaveR95_InvoiceFileTrailer(items95, batchnumber); }
-				success = true;
+				result = true;
 			}
 			catch (Exception ex)
 			{
 				log.Error(ex);
-				success = false;
+				result = false;
 			}
-			return success;
+			Successful= result;
 		}
 
 		public bool SaveR01_InvoiceFileHeader(List<Models.Files.Invoice.R01_InvoiceFileHeader> items, int batchnumber)

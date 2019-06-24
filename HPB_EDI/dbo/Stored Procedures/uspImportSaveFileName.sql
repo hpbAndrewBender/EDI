@@ -12,7 +12,7 @@ BEGIN
 	BEGIN TRANSACTION
 
 	BEGIN TRY
-		INSERT INTO dbo.importEDIFiles(EDITypeId,FullFileName, ImportDate)
+		INSERT INTO importx12.EDIFiles(EDITypeId,FullFileName, ImportDate)
 			OUTPUT inserted.EDIFileId into @Inserted (FileID)
 		VALUES (@EdiType, @FileName, @UTCDateTime)		
 		COMMIT TRANSACTION

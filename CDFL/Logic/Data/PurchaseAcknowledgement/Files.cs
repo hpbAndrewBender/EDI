@@ -28,7 +28,7 @@ namespace FormatCDFL.Logic.Data.PurchaseAcknowledgement
 			int batchnumber = 0;
 			try
 			{
-				batchnumber = CommonLib.Logic.Globals.CreateBatch(filename, vendor, 4);
+				batchnumber = CommonLib.Logic.Globals.CreateBatch("CDFL", filename, vendor, 4);
 			}
 			catch (Exception ex)
 			{
@@ -109,25 +109,26 @@ namespace FormatCDFL.Logic.Data.PurchaseAcknowledgement
 
 		public Models.Files.PurchaseAcknowledgement.DataSequence.V3 ReadFile(string filename, int batchnumber)
 		{
-			List<Models.Files.PurchaseAcknowledgement.R02_FileHeader> saveR02 = null;
-			List<Models.Files.PurchaseAcknowledgement.R11_PurchaseOrderHeader> saveR11 = null;
-			List<Models.Files.PurchaseAcknowledgement.R21_FreeFormVendor> saveR21 = null;
-			List<Models.Files.PurchaseAcknowledgement.R30_RecipientShipToNameAndAddress> saveR30 = null;
-			List<Models.Files.PurchaseAcknowledgement.R32_RecipientShipToAdditionalShippingInformation> saveR32 = null;
-			List<Models.Files.PurchaseAcknowledgement.R34_RecipientShipToCityStateAndZip> saveR34 = null;
-			List<Models.Files.PurchaseAcknowledgement.R40_LineItem> saveR40 = null;
-			List<Models.Files.PurchaseAcknowledgement.R41_AdditionalDetail> saveR41 = null;
-			List<Models.Files.PurchaseAcknowledgement.R42_AdditionalLineItem> saveR42 = null;
-			List<Models.Files.PurchaseAcknowledgement.R43_AdditionalLineItem> saveR43 = null;
-			List<Models.Files.PurchaseAcknowledgement.R44_ItemNumberOrPrice> saveR44 = null;
-			List<Models.Files.PurchaseAcknowledgement.R59_PurchaseOrderControlTotals> saveR59 = null;
-			List<Models.Files.PurchaseAcknowledgement.R91_FileTrailer> saveR91 = null;
+			List<Models.Files.PurchaseAcknowledgement.R02_FileHeader> r02 = null;
+			List<Models.Files.PurchaseAcknowledgement.R11_PurchaseOrderHeader> r11 = null;
+			List<Models.Files.PurchaseAcknowledgement.R21_FreeFormVendor> r21 = null;
+			List<Models.Files.PurchaseAcknowledgement.R30_RecipientShipToNameAndAddress> r30 = null;
+			List<Models.Files.PurchaseAcknowledgement.R32_RecipientShipToAdditionalShippingInformation> r32 = null;
+			List<Models.Files.PurchaseAcknowledgement.R34_RecipientShipToCityStateAndZip> r34 = null;
+			List<Models.Files.PurchaseAcknowledgement.R40_LineItem> r40 = null;
+			List<Models.Files.PurchaseAcknowledgement.R41_AdditionalDetail> r41 = null;
+			List<Models.Files.PurchaseAcknowledgement.R42_AdditionalLineItem> r42 = null;
+			List<Models.Files.PurchaseAcknowledgement.R43_AdditionalLineItem> r43 = null;
+			List<Models.Files.PurchaseAcknowledgement.R44_ItemNumberOrPrice> r44 = null;
+			List<Models.Files.PurchaseAcknowledgement.R59_PurchaseOrderControlTotals> r59 = null;
+			List<Models.Files.PurchaseAcknowledgement.R91_FileTrailer> r91 = null;
 			//
 			Models.Files.PurchaseAcknowledgement.DataSequence.V3 file = null;
 			Models.Files.PurchaseAcknowledgement.DataSequence.LineItem item = null;
 			//
 			string typename = string.Empty;
 			int itemCount = 0;
+			bool savedokay = false;
 
 			try
 			{
@@ -163,52 +164,52 @@ namespace FormatCDFL.Logic.Data.PurchaseAcknowledgement
 						switch (typename)
 						{
 							case "R02_FILEHEADER":
-								Common.Initialize(ref saveR02);
-								saveR02.Add((Models.Files.PurchaseAcknowledgement.R02_FileHeader)rec);
-								file.FileHeaderRecord = saveR02.LastItem();
+								Common.Initialize(ref r02);
+								r02.Add((Models.Files.PurchaseAcknowledgement.R02_FileHeader)rec);
+								file.FileHeaderRecord = r02.LastItem();
 								break;
 
 							case "R11_PURCHASEORDERHEADER":
-								Common.Initialize(ref saveR11);
-								saveR11.Add((Models.Files.PurchaseAcknowledgement.R11_PurchaseOrderHeader)rec);
-								file.PurchaseOrderHeaderRecord = saveR11.LastItem();
+								Common.Initialize(ref r11);
+								r11.Add((Models.Files.PurchaseAcknowledgement.R11_PurchaseOrderHeader)rec);
+								file.PurchaseOrderHeaderRecord = r11.LastItem();
 								break;
 
 							case "R21_FREEFORMVENDOR":
-								Common.Initialize(ref saveR21);
-								saveR21.Add((Models.Files.PurchaseAcknowledgement.R21_FreeFormVendor)rec);
+								Common.Initialize(ref r21);
+								r21.Add((Models.Files.PurchaseAcknowledgement.R21_FreeFormVendor)rec);
 								if (file.FreeFormVendor == null) { file.FreeFormVendor = new List<Models.Files.PurchaseAcknowledgement.R21_FreeFormVendor>(); }
 								if (file.FreeFormVendor.Count < file.Maxes[typename])
 								{
-									file.FreeFormVendor.Add(saveR21.LastItem());
+									file.FreeFormVendor.Add(r21.LastItem());
 								}
 								break;
 								
 							case "R30_RECIPIENTSHIPTONAMEANDADDRESS":
-								Common.Initialize(ref saveR30);
-								saveR30.Add((Models.Files.PurchaseAcknowledgement.R30_RecipientShipToNameAndAddress)rec);
-								file.RecipShipToNameAndAddressRecord = saveR30.LastItem();
+								Common.Initialize(ref r30);
+								r30.Add((Models.Files.PurchaseAcknowledgement.R30_RecipientShipToNameAndAddress)rec);
+								file.RecipShipToNameAndAddressRecord = r30.LastItem();
 								break;
 
 							case "R32_RECIPIENTSHIPTOADDITIONALSHIPPINGINFORMATION":
-								Common.Initialize(ref saveR32);
-								saveR32.Add((Models.Files.PurchaseAcknowledgement.R32_RecipientShipToAdditionalShippingInformation)rec);
+								Common.Initialize(ref r32);
+								r32.Add((Models.Files.PurchaseAcknowledgement.R32_RecipientShipToAdditionalShippingInformation)rec);
 								if(file.RecipShipToAdditionalShippingInfo == null) { file.RecipShipToAdditionalShippingInfo = new List<Models.Files.PurchaseAcknowledgement.R32_RecipientShipToAdditionalShippingInformation>(); }
 								if(file.RecipShipToAdditionalShippingInfo.Count < file.Maxes[typename])
 								{
-									file.RecipShipToAdditionalShippingInfo.Add(saveR32.LastItem());
+									file.RecipShipToAdditionalShippingInfo.Add(r32.LastItem());
 								}
 								break;
 
 							case "R34_RECIPIENTSHIPTOCITYSTATEANDZIP":
-								Common.Initialize(ref saveR34);
-								saveR34.Add((Models.Files.PurchaseAcknowledgement.R34_RecipientShipToCityStateAndZip)rec);
-								file.RecipShipToCityStateAndZipRecord = saveR34.LastItem();
+								Common.Initialize(ref r34);
+								r34.Add((Models.Files.PurchaseAcknowledgement.R34_RecipientShipToCityStateAndZip)rec);
+								file.RecipShipToCityStateAndZipRecord = r34.LastItem();
 								break;
 
 							case "R40_LINEITEM":
-								Common.Initialize(ref saveR40);
-								saveR40.Add((Models.Files.PurchaseAcknowledgement.R40_LineItem)rec);
+								Common.Initialize(ref r40);
+								r40.Add((Models.Files.PurchaseAcknowledgement.R40_LineItem)rec);
 								if(itemCount > 0)
 								{
 									if(item != null)
@@ -220,43 +221,43 @@ namespace FormatCDFL.Logic.Data.PurchaseAcknowledgement
 								if( file.LineItems == null ) { file.LineItems = new List<Models.Files.PurchaseAcknowledgement.DataSequence.LineItem>(); }
 								item = new Models.Files.PurchaseAcknowledgement.DataSequence.LineItem();
 								itemCount++;
-								item.LineItemRecord = saveR40.LastItem();
+								item.LineItemRecord = r40.LastItem();
 								break;
 
 							case "R41_ADDITIONALDETAIL":
-								Common.Initialize(ref saveR41);
-								saveR41.Add((Models.Files.PurchaseAcknowledgement.R41_AdditionalDetail)rec);
-								item.AdditionalDetailRecord = saveR41.LastItem();
+								Common.Initialize(ref r41);
+								r41.Add((Models.Files.PurchaseAcknowledgement.R41_AdditionalDetail)rec);
+								item.AdditionalDetailRecord = r41.LastItem();
 								break;
 
 							case "R42_ADDITIONALLINEITEM":
-								Common.Initialize(ref saveR42);
-								saveR42.Add((Models.Files.PurchaseAcknowledgement.R42_AdditionalLineItem)rec);
-								item.AddtionalLineItemTitleRecord = saveR42.LastItem();
+								Common.Initialize(ref r42);
+								r42.Add((Models.Files.PurchaseAcknowledgement.R42_AdditionalLineItem)rec);
+								item.AddtionalLineItemTitleRecord = r42.LastItem();
 								break;
 
 							case "R43_ADDITIONALLINEITEM":
-								Common.Initialize(ref saveR43);
-								saveR43.Add((Models.Files.PurchaseAcknowledgement.R43_AdditionalLineItem)rec);
-								item.AdditionalLineItemPublisherRecord = saveR43.LastItem();
+								Common.Initialize(ref r43);
+								r43.Add((Models.Files.PurchaseAcknowledgement.R43_AdditionalLineItem)rec);
+								item.AdditionalLineItemPublisherRecord = r43.LastItem();
 								break;
 
 							case "R44_ITEMNUMBERORPRICE":
-								Common.Initialize(ref saveR44);
-								saveR44.Add((Models.Files.PurchaseAcknowledgement.R44_ItemNumberOrPrice)rec);
-								item.ItemNumberOrPriceRecord = saveR44.LastItem();
+								Common.Initialize(ref r44);
+								r44.Add((Models.Files.PurchaseAcknowledgement.R44_ItemNumberOrPrice)rec);
+								item.ItemNumberOrPriceRecord = r44.LastItem();
 								break;						
 
 							case "R59_PURCHASEORDERCONTROLTOTALS":
-								Common.Initialize(ref saveR59);
-								saveR59.Add((Models.Files.PurchaseAcknowledgement.R59_PurchaseOrderControlTotals)rec);
-								file.PurchaseOrderControlTotalsRecord = saveR59.LastItem();
+								Common.Initialize(ref r59);
+								r59.Add((Models.Files.PurchaseAcknowledgement.R59_PurchaseOrderControlTotals)rec);
+								file.PurchaseOrderControlTotalsRecord = r59.LastItem();
 								break;
 
 							case "R91_FILETRAILER":
-								Common.Initialize(ref saveR91);
-								saveR91.Add((Models.Files.PurchaseAcknowledgement.R91_FileTrailer)rec);
-								file.FileTrailerRecord = saveR91.LastItem();
+								Common.Initialize(ref r91);
+								r91.Add((Models.Files.PurchaseAcknowledgement.R91_FileTrailer)rec);
+								file.FileTrailerRecord = r91.LastItem();
 								break;
 						}
 					}
@@ -266,6 +267,7 @@ namespace FormatCDFL.Logic.Data.PurchaseAcknowledgement
 						item = null;
 						itemCount = 0;
 					}
+					using (SQL sql = new SQL(batchnumber, r02, r11, r21, r30, r32, r34, r40, r41, r42, r43, r44, r59, r91)) { savedokay = sql.Successful; }
 				}
 			}
 			catch (Exception ex)

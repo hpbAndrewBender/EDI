@@ -1,4 +1,5 @@
-﻿CREATE VIEW dbo.[855_ACK_DTL]
+﻿
+CREATE VIEW [dbo].[855_ACK_DTL]
 	AS 
 		SELECT	 [AckItemId] AS [ItemAckID]
 				,[AckId]
@@ -18,4 +19,4 @@
 				,CAST([ItemDesc] AS NVARCHAR(250)) AS [ItemDesc]
 				,CAST([EDIFileID] AS INT) AS [EDIFileID]
 				,CAST([EDILineNumber] AS INT) AS [EDILineNumber]
-		FROM [EDI].[AcknowledgeDetail] 
+		FROM [BLK].[AcknowledgeDetail] 

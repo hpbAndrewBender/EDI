@@ -10,13 +10,13 @@ BEGIN
 	DECLARE @TransCodeId INT
 
 	SELECT @TransCodeId = EDITransactionCodeId
-	FROM dbo.importEDITransactionCodes tc
+	FROM importx12.EDITransactionCodes tc
 	WHERE tc.EDITransactionCode = @TransCode
 		AND EDITypeId = @EDITypeId
 
 	BEGIN TRANSACTION
 	BEGIN TRY
-		INSERT INTO dbo.importEDISummary (EDIFileId, EDITransactionCodeId, LineCount)
+		INSERT INTO importx12.EDISummary (EDIFileId, EDITransactionCodeId, LineCount)
 			VALUES (@EDIFileId, @TransCodeId, @LineCount)
 		COMMIT TRANSACTION
 	END TRY

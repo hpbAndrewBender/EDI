@@ -16,9 +16,9 @@ BEGIN
 		from (	SELECT DISTINCT EDIFileId
 				FROM  vuImportEDI_Unprocessed_TransactionRanges
 				WHERE EDIType = '810') segs
-			INNER JOIN importEDI_ISA isa
+			INNER JOIN [importX12].[TagISA]	isa
 				ON isa.EDIFileId = segs.EDIFileId
-			INNER JOIN importEDI_GS gs
+			INNER JOIN [importX12].[TagGS] gs
 				ON gs.EDIFileId = segs.EDIFileId
 
 	SELECT * FROM @AppCodes
@@ -37,11 +37,11 @@ BEGIN
 			,sac.*
 			,tds.*
 			,txi.*
-	FROM [importEDI_BIG] big
+	FROM [importX12].[TagBIG] big
 		INNER JOIN vuImportEDI_Unprocessed_TransactionRanges segs
 			ON segs.EDIFileID = big.EDIFileId
 				AND segs.TransactionSetControlNumber = big.ControlNumberTransaction
-		LEFT JOIN [importEDI_CUR] cur
+		LEFT JOIN [importx12].[TagCUR] cur
 			ON cur.EDIFileId = big.EDIFileId
 				AND cur.ControlNumberGroup = big.ControlNumberGroup
 				AND cur.ControlNumberTransaction = big.ControlNumberTransaction
@@ -49,7 +49,7 @@ BEGIN
 					AND cur.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND cur.LineNumber > big.LineNumber
 					AND cur.LineNumber - big.LineNumber = 1)
-		LEFT JOIN [importEDI_N1] n1
+		LEFT JOIN [importX12].[TagN1] n1
 			ON n1.EDIFileId = big.EDIFileId
 				AND n1.ControlNumberGroup = big.ControlNumberGroup
 				AND n1.ControlNumberTransaction = big.ControlNumberTransaction
@@ -57,7 +57,7 @@ BEGIN
 					AND n1.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND n1.LineNumber > COALESCE(cur.LineNumber, big.LineNumber)
 					AND n1.LineNumber - COALESCE(cur.LineNumber, big.LineNumber) BETWEEN 1 AND 2)
-		LEFT JOIN [importEDI_N2] n2
+		LEFT JOIN [importX12].[TagN2] n2
 			ON n2.EDIFileId = big.EDIFileId
 				AND n2.ControlNumberGroup = big.ControlNumberGroup
 				AND n2.ControlNumberTransaction = big.ControlNumberTransaction
@@ -65,7 +65,7 @@ BEGIN
 					AND n2.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND n2.LineNumber > COALESCE(n1.LineNumber, cur.LineNumber, big.LineNumber)
 					AND n2.LineNumber - COALESCE(n1.LineNumber, cur.LineNumber, big.LineNumber) BETWEEN 1 AND 2)
-		LEFT JOIN [importEDI_N3] n3
+		LEFT JOIN [importX12].[TagN3] n3
 			ON n3.EDIFileId = big.EDIFileId
 				AND n3.ControlNumberGroup = big.ControlNumberGroup
 				AND n3.ControlNumberTransaction = big.ControlNumberTransaction
@@ -73,7 +73,7 @@ BEGIN
 					AND n3.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND n3.LineNumber > COALESCE(n2.LineNumber, n1.LineNumber, cur.LineNumber, big.LineNumber)
 					AND n3.LineNumber - COALESCE(n2.LineNumber, n1.LineNumber, cur.LineNumber, big.LineNumber) BETWEEN 1 AND 2)
-		LEFT JOIN [importEDI_N4] n4
+		LEFT JOIN [importX12].[TagN4] n4
 			ON n4.EDIFileId = big.EDIFileId
 				AND n4.ControlNumberGroup = big.ControlNumberGroup
 				AND n4.ControlNumberTransaction = big.ControlNumberTransaction
@@ -81,7 +81,7 @@ BEGIN
 					AND n4.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND n4.LineNumber > COALESCE(n3.LineNumber, n2.LineNumber, n1.LineNumber, cur.LineNumber, big.LineNumber)
 					AND n4.LineNumber - COALESCE(n3.LineNumber, n2.LineNumber, n1.LineNumber, cur.LineNumber, big.LineNumber) BETWEEN 1 AND 2)
-		LEFT JOIN [importEDI_ITD] itd
+		LEFT JOIN [importX12].[TagITD] itd
 			ON itd.EDIFileId = big.EDIFileId
 				AND itd.ControlNumberGroup = big.ControlNumberGroup
 				AND itd.ControlNumberTransaction = big.ControlNumberTransaction
@@ -89,7 +89,7 @@ BEGIN
 					AND itd.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND itd.LineNumber > COALESCE(n4.LineNumber, n3.LineNumber, n2.LineNumber, n1.LineNumber, cur.LineNumber)
 					AND itd.LineNumber - COALESCE(n4.LineNumber, n3.LineNumber, n2.LineNumber, n1.LineNumber, cur.LineNumber) >=1)
-		LEFT JOIN [importEDI_DTM] dtm
+		LEFT JOIN [importX12].[TagDTM] dtm
 			ON itd.EDIFileId = big.EDIFileId
 				AND dtm.ControlNumberGroup = big.ControlNumberGroup
 				AND dtm.ControlNumberTransaction = big.ControlNumberTransaction
@@ -97,7 +97,7 @@ BEGIN
 					AND dtm.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND dtm.LineNumber > COALESCE(itd.LineNumber, n4.LineNumber, n3.LineNumber, n2.LineNumber, n1.LineNumber)
 					AND dtm.LineNumber - COALESCE(itd.LineNumber, n4.LineNumber, n3.LineNumber, n2.LineNumber, n1.LineNumber) >=1)
-		LEFT JOIN [importEDI_IT1] it1
+		LEFT JOIN [importX12].[TagIT1] it1
 			ON it1.EDIFileId = big.EDIFileId
 				AND it1.ControlNumberGroup = big.ControlNumberGroup
 				AND it1.ControlNumberTransaction = big.ControlNumberTransaction
@@ -105,7 +105,7 @@ BEGIN
 					AND it1.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND it1.LineNumber > COALESCE(dtm.LineNumber, itd.LineNumber, n4.LineNumber, n3.LineNumber, n2.LineNumber)
 					AND it1.LineNumber - COALESCE(dtm.LineNumber, itd.LineNumber, n4.LineNumber, n3.LineNumber, n2.LineNumber) >=1)
-		LEFT JOIN [importEDI_CTP] ctp
+		LEFT JOIN [importX12].[TagCTP] ctp
 			ON it1.EDIFileId = big.EDIFileId
 				AND ctp.ControlNumberGroup = big.ControlNumberGroup
 				AND ctp.ControlNumberTransaction = big.ControlNumberTransaction
@@ -113,7 +113,7 @@ BEGIN
 					AND ctp.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND ctp.LineNumber > COALESCE(it1.LineNumber, dtm.LineNumber, itd.LineNumber, n4.LineNumber, n3.LineNumber)
 					AND ctp.LineNumber - COALESCE(it1.LineNumber, dtm.LineNumber, itd.LineNumber, n4.LineNumber, n3.LineNumber) >=1)
-		LEFT JOIN [importEDI_PID] pid
+		LEFT JOIN [importX12].[TagPID] pid
 			ON pid.EDIFileId = big.EDIFileId
 				AND pid.ControlNumberGroup = big.ControlNumberGroup
 				AND pid.ControlNumberTransaction = big.ControlNumberTransaction
@@ -121,7 +121,7 @@ BEGIN
 					AND pid.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND pid.LineNumber > COALESCE(ctp.LineNumber, it1.LineNumber, dtm.LineNumber, itd.LineNumber, n4.LineNumber)
 					AND pid.LineNumber - COALESCE(ctp.LineNumber, it1.LineNumber, dtm.LineNumber, itd.LineNumber, n4.LineNumber) BETWEEN 1 AND 25)
-		LEFT JOIN [importEDI_SAC] sac
+		LEFT JOIN [importX12].[TagSAC] sac
 			ON sac.EDIFileId = big.EDIFileId
 				AND sac.ControlNumberGroup = big.ControlNumberGroup
 				AND sac.ControlNumberTransaction = big.ControlNumberTransaction
@@ -129,7 +129,7 @@ BEGIN
 					AND sac.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND sac.LineNumber > COALESCE(pid.LineNumber, ctp.LineNumber, it1.LineNumber, dtm.LineNumber, itd.LineNumber)
 					AND sac.LineNumber - COALESCE(pid.LineNumber, ctp.LineNumber, it1.LineNumber, dtm.LineNumber, itd.LineNumber) =1)
-		LEFT JOIN [importEDI_TDS] tds
+		LEFT JOIN [importX12].[TagTDS] tds
 			ON tds.EDIFileId = big.EDIFileId
 				AND tds.ControlNumberGroup = big.ControlNumberGroup
 				AND tds.ControlNumberTransaction = big.ControlNumberTransaction
@@ -137,7 +137,7 @@ BEGIN
 					AND tds.LineNumber BETWEEN segs.RangeStart+1 AND segs.RangeEnd-1
 					AND tds.LineNumber > COALESCE(sac.LineNumber, pid.LineNumber, ctp.LineNumber, it1.LineNumber, dtm.LineNumber)
 					AND tds.LineNumber - COALESCE(sac.LineNumber, pid.LineNumber, ctp.LineNumber, it1.LineNumber, dtm.LineNumber) =1)
-		LEFT JOIN [importEDI_TXI] txi
+		LEFT JOIN [importX12].[TagTXI] txi
 			ON txi.EDIFileId = big.EDIFileId
 				AND txi.ControlNumberGroup = big.ControlNumberGroup
 				AND txi.ControlNumberTransaction = big.ControlNumberTransaction

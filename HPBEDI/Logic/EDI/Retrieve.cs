@@ -14,10 +14,10 @@ namespace DataHPBEDI.Logic.EDI
 	{
 		private NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
-		public (Models.EDI.PurchaseOrder.Header header, List<Models.EDI.PurchaseOrder.Detail> details) PurchaseOrder(string ordernumber)
+		public (Models.BLK.PurchaseOrder.Header header, List<Models.BLK.PurchaseOrder.Detail> details) PurchaseOrder(string ordernumber)
 		{
-			Models.EDI.PurchaseOrder.Header header = null;
-			List<Models.EDI.PurchaseOrder.Detail> details = null;
+			Models.BLK.PurchaseOrder.Header header = null;
+			List<Models.BLK.PurchaseOrder.Detail> details = null;
 			DataSet data = null;
 			try
 			{
@@ -26,7 +26,7 @@ namespace DataHPBEDI.Logic.EDI
 					data = read.Set
 					(
 						Tools.dbConn[$"EDI-{Globals.Env}"],
-						new List<string>() { "EDI.uspPurchaseOrder_Retrieve" },
+						new List<string>() { "BLK.uspPurchaseOrder_Retrieve" },
 						new List<SqlParameter>
 						{
 							new SqlParameter() { ParameterName="PONumber", SqlDbType = SqlDbType.VarChar, Value = ordernumber}
@@ -39,7 +39,7 @@ namespace DataHPBEDI.Logic.EDI
 							if (data.Tables[0] != null && data.Tables[0].Rows.Count == 1)
 							{
 								header = (from DataRow row in data.Tables[0].Rows
-										  select new Models.EDI.PurchaseOrder.Header()
+										  select new Models.BLK.PurchaseOrder.Header()
 										  {
 											  BillToLoc = row.Field<string>("BillToLoc").ToString(),
 											  BillToSAN = row.Field<string>("BillToSAN").ToString(),
@@ -62,7 +62,7 @@ namespace DataHPBEDI.Logic.EDI
 							if (data.Tables[1] != null && data.Tables[1].Rows.Count > 0)
 							{
 								details = (from DataRow row in data.Tables[1].Rows
-										   select new Models.EDI.PurchaseOrder.Detail
+										   select new Models.BLK.PurchaseOrder.Detail
 										   {
 											   FillAmount = row.Field<string>("FillAmount"),
 											   ItemFillTerms = row.Field<string>("ItemFillTerms"),

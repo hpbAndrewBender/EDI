@@ -29,7 +29,7 @@ namespace UserConsole
 			{
 				Codes = codelist.AllCodes();
 			}
-			List<(string type,string read,string write, bool transup, bool transdown)> doit = new List<(string title,string read,string write, bool transup, bool transdown)>()
+			List<(string type,string read, string write, bool transup, bool transdown)> doit = new List<(string title,string read,string write, bool transup, bool transdown)>()
 			{
 				("BBV3", "N", "Y", false, true),
 				("CDFL", "Y", "N", false, true)
@@ -37,7 +37,7 @@ namespace UserConsole
 
 			if ((from d in doit.AsEnumerable() where d.type.ToUpper() == "BBV3" && d.write.ToUpper() == "Y" select d.read).Count() > 0)
 			{
-				using (DataHPBEDI.Logic.EDI.Retrieve ret = new DataHPBEDI.Logic.EDI.Retrieve())
+				using (DataHPBEDI.Logic.BLK.Retrieve ret = new DataHPBEDI.Logic.BLK.Retrieve())
 				{
 					dir = @"c:\temp\IC_EDI\BBV3\";
 					using (VendorIngramContent.Logic.PurchaseOrder.Create fileoutput = new VendorIngramContent.Logic.PurchaseOrder.Create((from c in Codes where c.FileFormat == "BBV3" && c.VendorId.ToLower() == currentvendor.ToLower() select c).ToList()))
@@ -84,7 +84,7 @@ namespace UserConsole
 			//
 			if ((from d in doit.AsEnumerable() where d.type.ToUpper() == "BBV3" && d.read.ToUpper() == "Y" select d.read).Count() > 0)
 			{
-				using (DataHPBEDI.Logic.EDI.Input input = new DataHPBEDI.Logic.EDI.Input())
+				using (DataHPBEDI.Logic.BLK.Input input = new DataHPBEDI.Logic.BLK.Input())
 				{
 					using (VendorIngramContent.Logic.Invoice.Retrieve inputinv = new VendorIngramContent.Logic.Invoice.Retrieve())
 					{
@@ -105,7 +105,7 @@ namespace UserConsole
 			 */
 			if ((from d in doit.AsEnumerable() where d.type.ToUpper() == "CDFL" && d.write.ToUpper() == "Y" select d.read).Count() > 0)
 			{
-				using (DataHPBEDI.Logic.EDI.Retrieve ret = new DataHPBEDI.Logic.EDI.Retrieve())
+				using (DataHPBEDI.Logic.CDF.Retrieve ret = new DataHPBEDI.Logic.CDF.Retrieve())
 				{
 					dir = @"c:\temp\IC_EDI\CDFL\";
 					using (VendorIngramContent.Logic.PurchaseOrder.Create fileoutput = new VendorIngramContent.Logic.PurchaseOrder.Create((from c in Codes where c.FileFormat == "CDFL" && c.VendorId.ToLower() == currentvendor.ToLower() select c).ToList()))
@@ -147,7 +147,7 @@ namespace UserConsole
 			//
 			if ((from d in doit.AsEnumerable() where d.type.ToUpper() == "CDFL" && d.read.ToUpper() == "Y" select d.read).Count() > 0)
 			{
-				using (DataHPBEDI.Logic.EDI.Input input = new DataHPBEDI.Logic.EDI.Input())
+				using (DataHPBEDI.Logic.CDF.Input input = new DataHPBEDI.Logic.CDF.Input())
 				{
 					using (VendorIngramContent.Logic.Invoice.Retrieve inputinv = new VendorIngramContent.Logic.Invoice.Retrieve())
 					{

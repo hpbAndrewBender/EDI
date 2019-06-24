@@ -15,16 +15,16 @@ BEGIN
 		from (	SELECT DISTINCT EDIFileId
 				FROM  vuImportEDI_Unprocessed_TransactionRanges
 				WHERE EDIType = '856') segs
-			INNER JOIN importEDI_ISA isa
+			INNER JOIN [importX12].[TagISA] isa
 				ON isa.EDIFileId = segs.EDIFileId
-			INNER JOIN importEDI_GS gs
+			INNER JOIN [importX12].[TagGS] gs
 				ON gs.EDIFileId = segs.EDIFileId
 
 	SELECT * FROM @AppCodes
 
 
 	SELECT	 bsn.*
-	FROM importEDI_BSN bsn
+	FROM [importX12].[TagBSN] bsn
 		INNER JOIN vuImportEDI_Unprocessed_TransactionRanges segs
 			ON bsn.EDIFileId = segs.EDIFileID
 				AND segs.[RangeStart] = bsn.LineNumber-1
@@ -32,12 +32,12 @@ BEGIN
 
 
 	IF EXISTS(	SELECT HierarchicalLevelCode
-				FROM importEDIFiles f
-					INNER JOIN importEDITypes t
+				FROM [importX12].[EDIFiles] f
+					INNER JOIN [importX12].EDITypes t
 						ON f.EDITypeId = t.EDITypeId
 							AND EDIType = '856'
 							AND f.Processed = 0
-					INNER JOIN importEDI_HL hl
+					INNER JOIN [importX12].[TagHL] hl
 						ON hl.EDIFileId = f.EDIFileId
 							AND hl.HierarchicalLevelCode = 'S'
 				GROUP BY HierarchicalLevelCode )
@@ -49,12 +49,12 @@ BEGIN
 					,td5.*
 					,ref.*
 					,dtm.*
-			FROM importEDI_BSN bsn
+			FROM [importX12].[TagBSN] bsn
 				INNER JOIN vuImportEDI_Unprocessed_TransactionRanges segs
 					ON bsn.EDIFileId = segs.EDIFileID
 						AND segs.[RangeStart] = bsn.LineNumber-1
 						AND segs.TransactionSetControlNumber = bsn.ControlNumberTransaction
-				LEFT JOIN importedi_hl hls
+				LEFT JOIN [importX12].[TagHl] hls
 					ON hls.EDIFileId = bsn.EDIFileId
 						AND hls.HierarchicalLevelCode = 'S'
 						AND hls.ControlNumberGroup = bsn.ControlNumberGroup
@@ -62,7 +62,7 @@ BEGIN
 						AND (hls.ControlNumberTransaction = segs.TransactionSetControlNumber 
 							AND hls.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 							AND hls.LineNumber > bsn.LineNumber)
-				LEFT JOIN importEDI_TD1 td1
+				LEFT JOIN [importX12].[TagTD1] td1
 					ON td1.EDIFileId = bsn.EdiFileId
 						AND td1.ControlNumberGroup = bsn.ControlNumberGroup
 						AND td1.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -70,7 +70,7 @@ BEGIN
 								AND td1.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 								AND td1.LineNumber > COALESCE(hls.LineNumber,bsn.LineNumber)
 								AND td1.LineNumber - COALESCE(hls.LineNumber,bsn.LineNumber) BETWEEN 1 AND 20)
-				LEFT JOIN importEDI_TD5 td5
+				LEFT JOIN [importX12].[TagTD5] td5
 					ON td5.EDIFileId = bsn.EDIFileID
 						AND td5.ControlNumberGroup = bsn.ControlNumberGroup
 						AND td5.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -78,7 +78,7 @@ BEGIN
 							AND td5.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 							AND td5.LineNumber > COALESCE(td1.LineNumber, hls.LineNumber, bsn.LineNumber)
 							AND td5.LineNumber - COALESCE(td1.LineNumber, hls.LineNumber, bsn.LineNumber) BETWEEN 1 AND 12)
-				LEFT JOIN importEDI_REF ref
+				LEFT JOIN [importX12].[TagREF] ref
 					ON ref.EDIFileId = bsn.EDIFileId
 						AND ref.ControlNumberGroup = bsn.ControlNumberGroup
 						AND ref.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -86,7 +86,7 @@ BEGIN
 							 AND ref.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 							 AND ref.LineNumber > COALESCE(td5.LineNumber, td1.LineNumber, hls.LineNumber, bsn.LineNumber)
 							 AND ref.LineNumber - COALESCE(td5.LineNumber, td1.LineNumber, hls.LineNumber, bsn.LineNumber) >= 1)
-				LEFT JOIN importEDI_DTM dtm
+				LEFT JOIN [importX12].[TagDTM] dtm
 					ON dtm.EDIFileId = bsn.EDIFileId
 						AND dtm.ControlNumberGroup = bsn.ControlNumberGroup
 						AND dtm.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -103,12 +103,12 @@ BEGIN
 				,n2.*
 				,n3.*
 				,n4.*
-		FROM importEDI_BSN bsn
+		FROM [importX12].[TagBSN] bsn
 			INNER JOIN vuImportEDI_Unprocessed_TransactionRanges segs
 				ON bsn.EDIFileId = segs.EDIFileID
 					AND segs.[RangeStart] = bsn.LineNumber-1
 					AND segs.TransactionSetControlNumber = bsn.ControlNumberTransaction
-			LEFT JOIN importEDI_n1 n1
+			LEFT JOIN [importX12].[TagN1] n1
 				ON n1.EDIFileId = bsn.EDIFileId
 					AND n1.ControlNumberGroup = bsn.ControlNumberGroup 
 					AND n1.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -116,7 +116,7 @@ BEGIN
 						AND n1.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 						AND n1.LineNumber > bsn.LineNumber
 						AND n1.LineNumber-bsn.LineNumber >=1 )
-			LEFT JOIN importEDI_n2 n2
+			LEFT JOIN [importX12].[TagN2] n2
 				ON n2.EDIFileId = bsn.EDIFileId
 					AND n2.ControlNumberGroup = bsn.ControlNumberGroup 
 					AND n2.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -124,7 +124,7 @@ BEGIN
 						AND n2.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 						AND n2.LineNumber > COALESCE(n1.LineNumber,bsn.LineNumber)
 						AND n2.LineNumber - COALESCE(n1.LineNumber,bsn.LineNumber) BETWEEN 1 AND 2)
-			LEFT JOIN importEDI_n3 n3
+			LEFT JOIN [importX12].[TagN3] n3
 				ON n3.EDIFileId = bsn.EDIFileId
 					AND n3.ControlNumberGroup = bsn.ControlNumberGroup 
 					AND n3.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -132,7 +132,7 @@ BEGIN
 						AND n3.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 						AND n3.LineNumber > COALESCE(n2.LineNumber, n1.LineNumber,bsn.LineNumber)
 						AND n3.LineNumber - COALESCE(n2.LineNumber, n1.LineNumber,bsn.LineNumber) BETWEEN 1 AND 2)
-			LEFT JOIN importEDI_n4 n4
+			LEFT JOIN [importX12].[TagN4] n4
 				ON n4.EDIFileId = bsn.EDIFileId
 					AND n4.ControlNumberGroup = bsn.ControlNumberGroup 
 					AND n4.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -143,12 +143,12 @@ BEGIN
 		ORDER BY bsn.LineNumber, n1.LineNumber, n2.LineNumber, n3.LineNumber, n4.LineNumber
 
 	IF EXISTS(	SELECT HierarchicalLevelCode
-				FROM importEDIFiles f
-					INNER JOIN importEDITypes t
+				FROM importx12.EDIFiles f
+					INNER JOIN importx12.EDITypes t
 						ON f.EDITypeId = t.EDITypeId
 							AND EDIType = '856'
 							AND f.Processed = 0
-					INNER JOIN importEDI_HL hl
+					INNER JOIN [importX12].[TagHL] hl
 						ON hl.EDIFileId = f.EDIFileId
 							AND hl.HierarchicalLevelCode = 'O'
 				GROUP BY HierarchicalLevelCode )
@@ -157,12 +157,12 @@ BEGIN
 			SELECT	 bsn.BSNId, bsn.LineNumber, bsn.ShipmentIdentification, bsn.[Date], bsn.[Time]
 					,hlo.*
 					,prf.*
-			FROM importEDI_BSN bsn
+			FROM [importX12].[TagBSN] bsn
 				INNER JOIN vuImportEDI_Unprocessed_TransactionRanges segs
 					ON bsn.EDIFileId = segs.EDIFileID
 						AND segs.[RangeStart] = bsn.LineNumber-1
 						AND segs.TransactionSetControlNumber = bsn.ControlNumberTransaction
-				LEFT JOIN importedi_hl hlo
+				LEFT JOIN [importX12].[TagHL] hlo
 					ON hlo.EDIFileId = bsn.EDIFileId
 						AND hlo.HierarchicalLevelCode = 'O'
 						AND hlo.ControlNumberGroup = bsn.ControlNumberGroup
@@ -170,7 +170,7 @@ BEGIN
 						AND (hlo.ControlNumberTransaction = segs.TransactionSetControlNumber 
 							AND hlo.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 							 AND hlo.LineNumber > bsn.LineNumber)
-				LEFT JOIN importEDI_PRF prf
+				LEFT JOIN [importX12].[TagPRF] prf
 					ON prf.EDIFileId = bsn.EDIFileId
 						AND prf.ControlNumberGroup = hlo.ControlNumberGroup
 						AND prf.ControlNumberTransaction = hlo.ControlNumberTransaction
@@ -182,12 +182,12 @@ BEGIN
 	END
 
 	IF EXISTS(	SELECT HierarchicalLevelCode
-				FROM importEDIFiles f
-					INNER JOIN importEDITypes t
+				FROM importx12.EDIFiles f
+					INNER JOIN importx12.EDITypes t
 						ON f.EDITypeId = t.EDITypeId
 							AND EDIType = '856'
 							AND f.Processed = 0
-					INNER JOIN importEDI_HL hl
+					INNER JOIN [importX12].[TagHL] hl
 						ON hl.EDIFileId = f.EDIFileId
 							AND hl.HierarchicalLevelCode = 'T'
 				GROUP BY HierarchicalLevelCode )
@@ -196,12 +196,12 @@ BEGIN
 			SELECT	 bsn.BSNId, bsn.LineNumber, bsn.ShipmentIdentification, bsn.[Date], bsn.[Time]
 					,hlt.*
 					,pal.*
-			FROM importEDI_BSN bsn
+			FROM [importX12].[TagBSN] bsn
 				INNER JOIN vuImportEDI_Unprocessed_TransactionRanges segs
 					ON bsn.EDIFileId = segs.EDIFileID
 						AND segs.[RangeStart] = bsn.LineNumber-1
 						AND segs.TransactionSetControlNumber = bsn.ControlNumberTransaction
-				LEFT JOIN importedi_hl hlt
+				LEFT JOIN [importX12].[TagHL] hlt
 					ON hlt.EDIFileId = bsn.EDIFileId
 						AND hlt.HierarchicalLevelCode = 'T'
 						AND hlt.ControlNumberGroup = bsn.ControlNumberGroup
@@ -209,7 +209,7 @@ BEGIN
 						AND (hlt.ControlNumberTransaction = segs.TransactionSetControlNumber 
 							AND hlt.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 							AND hlt.LineNumber > bsn.LineNumber)
-				LEFT JOIN importEDI_PAL pal
+				LEFT JOIN [importX12].[TagPAL] pal
 					ON pal.EDIFileId = bsn.EDIFileId
 						AND pal.ControlNumberGroup = hlt.ControlNumberGroup
 						AND pal.ControlNumberTransaction = hlt.ControlNumberTransaction
@@ -217,7 +217,7 @@ BEGIN
 								AND pal.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 								AND pal.LineNumber > COALESCE(hlt.LineNumber,bsn.LineNumber)
 								AND pal.LineNumber - COALESCE(hlt.LineNumber,bsn.LineNumber) =1)
-				LEFT JOIN importEDI_man manp
+				LEFT JOIN [importX12].[TagMAN] manp
 					ON pal.EDIFileId = bsn.EDIFileId
 						AND manp.ControlNumberGroup = hlt.ControlNumberGroup
 						AND manp.ControlNumberTransaction = hlt.ControlNumberTransaction
@@ -231,12 +231,12 @@ BEGIN
 	END
 
 	IF EXISTS(	SELECT HierarchicalLevelCode
-				FROM importEDIFiles f
-					INNER JOIN importEDITypes t
+				FROM importx12.EDIFiles f
+					INNER JOIN importx12.EDITypes t
 						ON f.EDITypeId = t.EDITypeId
 							AND EDIType = '856'
 							AND f.Processed = 0
-					INNER JOIN importEDI_HL hl
+					INNER JOIN [importX12].[TagHL] hl
 						ON hl.EDIFileId = f.EDIFileId
 							AND hl.HierarchicalLevelCode = 'P'
 				GROUP BY HierarchicalLevelCode )
@@ -246,12 +246,12 @@ BEGIN
 					,hlp.*
 					,meap.*
 					,man.*
-			FROM importEDI_BSN bsn
+			FROM [importX12].[TagBSN] bsn
 				INNER JOIN vuImportEDI_Unprocessed_TransactionRanges segs
 					ON bsn.EDIFileId = segs.EDIFileID
 						AND segs.[RangeStart] = bsn.LineNumber-1
 						AND segs.TransactionSetControlNumber = bsn.ControlNumberTransaction
-				LEFT JOIN importedi_hl hlp
+				LEFT JOIN [importX12].[TagHL] hlp
 					ON hlp.EDIFileId = bsn.EDIFileId
 						AND hlp.HierarchicalLevelCode = 'P'
 						AND hlp.ControlNumberGroup = bsn.ControlNumberGroup
@@ -259,7 +259,7 @@ BEGIN
 						AND (hlp.ControlNumberTransaction = segs.TransactionSetControlNumber 
 							AND hlp.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 							AND hlp.LineNumber > bsn.LineNumber)
-				LEFT JOIN importEDI_MEA meap
+				LEFT JOIN [importX12].[TagMEA] meap
 					ON meap.EDIFileId = bsn.EDIFileId
 						AND meap.ControlNumberGroup = bsn.ControlNumberGroup
 						AND meap.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -267,7 +267,7 @@ BEGIN
 								AND meap.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 								AND meap.LineNumber > COALESCE(hlp.LineNumber,bsn.LineNumber)
 								AND meap.LineNumber - COALESCE(hlp.LineNumber,bsn.LineNumber) = 1 )
-				LEFT JOIN importEDI_MAN man
+				LEFT JOIN [importX12].[TagMAN] man
 					ON man.EDIFileId = bsn.EDIFileId
 						AND man.ControlNumberGroup = bsn.ControlNumberGroup
 						AND man.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -279,12 +279,12 @@ BEGIN
 	END
 
 	IF EXISTS(	SELECT HierarchicalLevelCode
-				FROM importEDIFiles f
-					INNER JOIN importEDITypes t
+				FROM importx12.EDIFiles f
+					INNER JOIN importx12.EDITypes t
 						ON f.EDITypeId = t.EDITypeId
 							AND EDIType = '856'
 							AND f.Processed = 0
-					INNER JOIN importEDI_HL hl
+					INNER JOIN [importX12].[TagHL] hl
 						ON hl.EDIFileId = f.EDIFileId
 							AND hl.HierarchicalLevelCode = 'I'
 				GROUP BY HierarchicalLevelCode )
@@ -296,12 +296,12 @@ BEGIN
 					,sn1.*
 					,meai.*
 					,cur.* 
-			FROM importEDI_BSN bsn
+			FROM [importX12].[TagBSN] bsn
 				INNER JOIN vuImportEDI_Unprocessed_TransactionRanges segs
 					ON bsn.EDIFileId = segs.EDIFileID
 						AND segs.[RangeStart] = bsn.LineNumber-1
 						AND segs.TransactionSetControlNumber = bsn.ControlNumberTransaction
-				LEFT JOIN importedi_hl hli
+				LEFT JOIN [importX12].[TagHL] hli
 					ON hli.EDIFileId = bsn.EDIFileId
 						AND hli.HierarchicalLevelCode = 'I'
 						AND hli.ControlNumberGroup = bsn.ControlNumberGroup
@@ -309,7 +309,7 @@ BEGIN
 						AND (hli.ControlNumberTransaction = segs.TransactionSetControlNumber 
 							AND hli.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 							AND hli.LineNumber > bsn.LineNumber)
-				LEFT JOIN importEDI_LIN lin
+				LEFT JOIN [importX12].[TagLIN] lin
 					ON lin.EDIFileId = bsn.EDIFileId
 						AND lin.ControlNumberGroup = bsn.ControlNumberGroup
 						AND lin.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -317,7 +317,7 @@ BEGIN
 							AND lin.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 							AND lin.LineNumber > COALESCE(hli.LineNumber, bsn.LineNumber)
 							AND lin.LineNumber - COALESCE(hli.LineNumber,bsn.LineNumber)= 1)
-				LEFT JOIN importEDI_SN1 sn1
+				LEFT JOIN [importX12].[TagSN1] sn1
 					ON lin.EDIFileId = bsn.EDIFileId
 						AND sn1.ControlNumberGroup = bsn.ControlNumberGroup
 						AND sn1.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -325,7 +325,7 @@ BEGIN
 							AND sn1.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 							AND sn1.LineNumber > COALESCE(lin.LineNumber, hli.LineNumber, bsn.LineNumber)
 							AND sn1.LineNumber - COALESCE(lin.LineNumber, hli.LineNumber,bsn.LineNumber)= 1)
-				LEFT JOIN importEDI_MEA meai
+				LEFT JOIN [importX12].[TagMEA] meai
 					ON meai.EDIFileId = bsn.EDIFileId
 						AND meai.ControlNumberGroup = bsn.ControlNumberGroup
 						AND meai.ControlNumberTransaction = bsn.ControlNumberTransaction
@@ -333,7 +333,7 @@ BEGIN
 							AND meai.LineNumber BETWEEN segs.[RangeStart]+1 AND segs.[RangeEnd]-1
 							AND meai.LineNumber > COALESCE(sn1.LineNumber, lin.LineNumber, hli.LineNumber, bsn.LineNumber)
 							AND meai.LineNumber - COALESCE(sn1.LineNumber,  hli.LineNumber,bsn.LineNumber) BETWEEN 1 AND 40)
-				LEFT JOIN importEDI_CUR cur
+				LEFT JOIN [importX12].[TagCUR] cur
 					ON cur.EDIFileId = bsn.EDIFileId
 						AND cur.ControlNumberGroup = bsn.ControlNumberGroup
 						AND cur.ControlNumberTransaction = bsn.ControlNumberTransaction
